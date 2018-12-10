@@ -10,7 +10,7 @@ examples, or file PR's to provide examples to the Chef Community.
 ## Chef Server
 
 ## Automate
-
+- [Setting Up SAML Auth in A2 with Okta](./examples/A2SamlWithOkta.md)
 ## InSpec
 
 ### Contributing

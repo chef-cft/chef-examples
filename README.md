@@ -9,7 +9,7 @@ examples, or file PR's to provide examples to the Chef Community.
 
 ## Chef Server
 - [HowTo download then upload all Chef Cookbooks from one Chef Server to another](./examples/DownloadUploadCookbooks.md)
-- [Using and Automating the Role Cookbook Model with Jenkins Pipeline](./examples/RoleCookbookModel.md)
+- [Role Cookbook Model Explained](./examples/RoleCookbookModel.md)
 
 ## Automate
 - [Setting Up SAML Auth in A2 with Okta](./examples/A2SamlWithOkta.md)

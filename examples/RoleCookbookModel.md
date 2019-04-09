@@ -37,7 +37,8 @@ environment and make changes to them without affecting each other.
 
 The image below shows a simplified view of the Role Cookbook ecosystem, along
 with the steps needed to update a Role Cookbook and publish it to your
-environment. You'll notice the roles end in `_g`, that means "Green", we'll dive into that later as we discuss Blue/Green deployment scenarios.
+environment. You'll notice the roles end in `_g` for "green" and `_b` for "blue"
+, this is for a typical blue/green deployment scenario.
 
 ![Role Cookbook Update Process](../images/RoleCookbookModel/role_cb_update_process_2.png)
 

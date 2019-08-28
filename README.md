@@ -15,6 +15,7 @@ examples, or file PR's to provide examples to the Chef Community.
 - [Setting Up SAML Auth in A2 with Okta](./examples/A2SamlWithOkta.md)
 - [Creating a Cookbook Pipeline Using Azure DevOps](./examples/AzureDevOpsCookbookPipeline.md)
 ## InSpec
+- [Inspec example of checking Netbios configuration on Windows](./examples/InspecNetBiosQuery.md)
 
 ### Contributing
 

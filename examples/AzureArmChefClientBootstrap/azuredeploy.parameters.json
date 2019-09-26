@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "adminUsername": {
+        "value": "CHANGEME"
+      },
+      "adminPassword": {
+        "value": "CHANGEME"
+      },
+      "dnsLabelPrefix": {
+        "value": "CHANGEME"
+      },
+      "bootstrapURL": {
+        "value": "CHANGEME"
+      },
+      "validatorURL": {
+        "value": "CHANGEME"
+      },
+      "vNicName": {
+        "value": "myVNic"
+      },
+      "vNetName": {
+        "value": "myVNet"
+      },
+      "pubIPName": {
+        "value": "myPubIP"
+      },
+      "vmName": {
+        "value": "CHANGEME"
+      }
+    }
+  }

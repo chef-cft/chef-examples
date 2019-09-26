@@ -40,19 +40,19 @@ We're going to create the storage account + container in the Azure GUI, I know t
 
 1. In Azure, click "Storage Accounts" -> then "+ Add"
 1. Fill out the first tab, in my example below, I create a new Resource Group, however you can use an existing one if you'd like:
-![](./images/step-1a.png)
+![](./images/step-1a.PNG)
 1. Next, click "Review + Create" - you can go through all of the steps in the wizard if you'd like, but we're just going to get'er'done here. Once you confirm, you'll be taken to a page that says "Your deployment is underway" - just wait for that to complete before moving on.
 1. Once it completes, click on "Go to resource"
 1. Click on the box labelled "Blobs"
 1. Click on the "+ Container" an create a new container named "client-bootstrap", leave it as private.
-![](./images/step-1b.png)
+![](./images/step-1b.PNG)
 1. Click on your newly created container, you should now see nothing in it.
 1. Next, click "Upload" and upload the 2 files you staged in Part 1.
 1. You should now see both files in the container as below, my client is named "dbright" so my validator is named `dbright.pem`.
-![](./images/step-2c.png)
+![](./images/step-2c.PNG)
 1. Now, for each file, we're going to generate an SAS token, so first click on the `bootstrap.ps1` file, then click on the "Generate SAS" tab.
 1. Change the settings to your liking, you can set the token to expire quickly or make it longer lived. Ideally, this will be part of a pipeline process so the tokens should always be short-lived.
-![](./images/step-2d.png)
+![](./images/step-2d.PNG)
 1. Next, click "Generate blob SAS token and URL"
 1. Copy the "Blob SAS URL".
 1. Open up the `azuredeploy.parameters.json` file you pulled down in Part 1. Update the value for the `bootstrapURL` parameter with the URL you copied in the previous step.
@@ -70,8 +70,8 @@ We're going to create the storage account + container in the Azure GUI, I know t
     -TemplateParameterFile ./azuredeploy.parameters.json
     ```
 1. You can follow-along in Azure if you want, however I just open up Automate and wait to see my new node get created on the dashboard. Once I see it, I can also go inspect the Chef Infra Client run to see if it converged succesfully. I've found this can take up to 10 minutes, so be patient. Here's my node showing up in Automate:
-![](./images/step-3a.png)
-![](./images/step-3b.png)
+![](./images/step-3a.PNG)
+![](./images/step-3b.PNG)
 1. Here's what my completed Powershell output looks like:
    ```powershell
     PS C:\git\azure-bootstrap\chef-client-policyfiles> New-AzResourceGroupDeployment -Name ChefClientBootstrap -ResourceGroupName dbright `

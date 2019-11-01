@@ -33,6 +33,18 @@ Since SDLC is a process, this same flow works for all the artifacts. In the next
 
 ![Cookbook Process](images/cookbooks.png)
 
+Cookbooks have three variations; the modern effortless pattern, the current policyfile pattern, and the legacy berks pattern. The `Test` stage is the same for all three patterns.
+
+* Lint/Syntax - Verify that the cookbook code is free of errors and follows proper patterns
+* Unit - Use Unit tests to verify complex logic in the cookbook. Do not write Unit tests for simple resources.
+* Functional - Provision ephemeral instance(s) to test the functionality of the cookbook.
+
+> NOTE: Functional testing can add considerable complexity to the pipeline process depending on the technical variations of the target environment. The general recommendation is to use cloud resources for Kitchen testing as it simplifies the configuration of the CI/CD tool.
+
+All three patterns have similar `Publish` stages as well. The primary difference being the commands executed to complete the publish action.
+
+The `Promote` stage has the widest variance in process as the legacy `berks` pattern is considerably different than the `effortless` and `policyfile` patterns.
+
 ### Data bags, Environments, and Roles
 
 ![Server Objects Process](./images/serverobjects.png)

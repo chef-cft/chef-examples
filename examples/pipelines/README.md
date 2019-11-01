@@ -43,11 +43,17 @@ Cookbooks have three variations; the modern effortless pattern, the current poli
 
 All three patterns have similar `Publish` stages as well. The primary difference being the commands executed to complete the publish action.
 
-The `Promote` stage has the widest variance in process as the legacy `berks` pattern is considerably different than the `effortless` and `policyfile` patterns.
+The `Promote` stage has the widest variance in process as the legacy `berks` pattern is considerably different than the `effortless` and `policyfile` patterns. If you are using the legacy `berks` pattern, scroll on down to the Environments section. Be sure to read the caveats and warnings.
+
+On to the modern patterns. If you think that the `effortless` and `policyfiles` patterns look alike, you aren't seeing double. The workflow is exactly the same. The functional difference between them is mechanism in how `chef-client` is delivered/executed on the target node. The diagram above shows 3 environments: `dev`, `stg`, and `prod`; however, these can be expanded to include additional environments if needed. The examples in this repo use simple approvals. Once a base pipeline is running, one can extend the process to integrate with change management systems or other approval systems.
 
 ### Data bags, Environments, and Roles
 
 ![Server Objects Process](./images/serverobjects.png)
+
+If the diagram above looks a little sparse, you are correct. There are several legacy objects in the Chef Infra ecosystem that aren't versioned and only have a single stage lifecycle. A change to a data bag, environment, or role will affect any system that consumes that object during the next converge. We still pipeline these artifacts so we can have a single path to production. This also give us better change tracking and auditability as all changes happen in the SCM system.
+
+There is one recommended step, validating the JSON. While there are numerous ways to lint or validate JSON data, `jq` seems to be the simplest as the `-e` option will give discrete exit codes for failures.
 
 ### Plans
 

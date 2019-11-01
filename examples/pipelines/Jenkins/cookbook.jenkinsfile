@@ -1,0 +1,58 @@
+pipeline {
+  agent any
+  stages {
+    stage('Verify') {
+      parallel {
+        stage('Lint/Syntax') {
+          steps {
+            sh 'chef exec cookstyle .'
+          }
+        }
+        stage('Unit') {
+          steps {
+            sh 'chef exec rspec .'
+          }
+        }
+        stage('Functional') {
+          steps {
+            sh '# kitchen test'
+          }
+        }
+      }
+    }
+    stage('Stage files') {
+      when {
+        // Only execute when on the master branch
+        expression { env.BRANCH_NAME == 'master' }
+      }
+      steps {
+        sh '''
+          mkdir -p ~/chef_repo/cookbooks/${proj_name}
+          cp -r * ~/chef_repo/cookbooks/${proj_name}
+        '''
+      }
+    }
+    stage('Approval') {
+      when {
+        // Only execute when on the master branch
+        expression { env.BRANCH_NAME == 'master' }
+      }
+      steps {
+        input 'Release to Production?'
+      }
+    }
+    stage('Upload') {
+      when {
+        // Only execute when on the master branch
+        expression { env.BRANCH_NAME == 'master' }
+      }
+      steps {
+        sh '''
+        cd ~/chef_repo/cookbooks/${proj_name}
+        berks install
+        berks upload --ssl-verify=false
+        '''
+      }
+    }
+  }
+}

@@ -6,13 +6,15 @@ This repo contains examples for pipelining Chef related artifacts using several 
 
 ### Assumptions
 
-* This assumes you have the ability to provision/enable the settings and options for your preferred CI/CD tool
+* This assumes you have the ability to provision resources and/or enable the settings and options for your preferred CI/CD tool.
 
 ### Tested Versions
 
-* Azure DevOps - [dev.azure.com](https://dev.azure.com)
-* Jenkins - 2.190.2
-* GitLab - [gitlab.com](https://www.gitlab.com)
+* [Azure DevOps](AzureDevOps/README.md) - [dev.azure.com](https://dev.azure.com)
+* [Jenkins](Jenkins/README.md) - [2.190.2](https://jenkins.io/download/)
+* [GitLab](GitLabCI/README.md) - [gitlab.com](https://www.gitlab.com)
+
+> NOTE: Clicking the tool name will provide tool specific detail with code examples.
 
 ## Pipeline basics
 
@@ -59,9 +61,19 @@ There is one recommended step, validating the JSON. While there are numerous way
 
 ![Plans Process](images/plan.png)
 
+Let's continue onto [Habitat](https://www.habitat.sh) plans. While the overall process is the same, the notable difference is the main testing phases need to test the application we're packaging along with the actual Habitat code itself. Consider using linters like [ShellCheck](https://www.shellcheck.net/) for Bash in Linux plans or [PSScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer) for PowerShell in Windows plans.
+
+If the application team(s) have existing pipelines, consider working with them to integrate the Habitat build steps into their existing pipeline. It's a small change to their pipeline and a great way to collaborate with them in true DevOps style.
+
 ### Profiles
 
 ![Profiles Process](images/profiles.png)
+
+The final topic in this readme is [InSpec](https://www.inspec.io) Profiles. As we saw with cookbooks, there can be multiple patterns for deployment. In the case of profiles, we have two patterns, the legacy [Audit Cookbook](https://supermarket.chef.io/cookbooks/audit) pattern and the modern effortless pattern.
+
+Although InSpec can consume profiles from multiple sources, the general recommendation is store profiles in Automate. Regardless of the artifact location, the legacy audit cookbook will consume any updates to deployed profiles automatically. There are ways to pin versions to limit the risk of inadvertent deployments, however, profile versions can be overwritten so this entirely safe. With this pattern, the InSpec runs are triggered from the `chef-client` converge so if something breaks `chef-client`, you stop getting compliance reports.
+
+The modern effortless pattern for profiles follows the exact same flow as effortless pattern for cookbooks and Habitat Plans. As noted above, this gives better control over the release process. In the case of profiles, this also decouples the release cycles for the various tools allowing one to ship different code at different velocities.
 
 ## FAQs
 

@@ -1,0 +1,37 @@
+pipeline {
+  agent any
+  stages {
+    stage('Verify') {
+      parallel {
+        stage('Lint/Syntax') {
+          steps {
+            sh 'chef exec cookstyle .'
+          }
+        }
+        stage('Unit') {
+          steps {
+            sh 'chef exec rspec .'
+          }
+        }
+        stage('Functional') {
+          steps {
+            sh 'kitchen test'
+          }
+        }
+      }
+    }
+    stage('Approval') {
+      steps {
+        input 'Release to Production?'
+      }
+    }
+    stage('Upload') {
+      steps {
+        sh '''
+        berks install
+        berks upload --ssl-verify=false
+        '''
+      }
+    }
+  }
+}

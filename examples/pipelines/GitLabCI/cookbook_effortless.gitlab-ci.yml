@@ -1,4 +1,5 @@
-image: "ubuntu"
+image: "chef/chefdk"
+
 services:
   - docker:dind
 

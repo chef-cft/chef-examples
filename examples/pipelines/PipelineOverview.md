@@ -1,4 +1,4 @@
-# HowTo - Pipeline examples
+# HowTo - Chef Pipeline Overview
 
 This repo contains examples for pipelining Chef related artifacts using several of the popular CI/CD tools. While these examples should be functional and directly consumable, they are not exhaustive and only provide the minimum recommended steps. The author's expectation is that consumers will use these examples to get started then tailor them as needed in a continuous improvement fashion.
 

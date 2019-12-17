@@ -1,0 +1,34 @@
+image: "chef/chefdk"
+
+services:
+  - docker:dind
+
+before_script:
+  - echo $(admin-pem) | base64 -d > ~/.chef/admin.pem
+  - echo $(knife-rb) | base64 -d > ~/.chef/knife.rb
+
+stages:
+  - test
+  - build
+  - publish
+
+cookstyle:
+  stage: test
+  script:
+    - chef exec cookstyle .
+
+chefspec:
+  stage: test
+  script:
+    - chef exec rspec .
+
+chefspec:
+  stage: test
+  script:
+    - chef exec kitchen test
+
+publish:
+  stage: publish
+  script:
+    - berks install
+    - berks upload --ssl-verify=false

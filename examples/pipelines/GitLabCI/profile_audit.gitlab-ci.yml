@@ -1,0 +1,25 @@
+image: "chef/chefdk"
+
+services:
+  - docker:dind
+
+before_script:
+  - echo $(admin-pem) | base64 -d > ~/.chef/admin.pem
+  - echo $(knife-rb) | base64 -d > ~/.chef/knife.rb
+
+stages:
+  - test
+  - publish
+
+lint:
+  stage: test
+  script:
+    - inspec check .
+
+publish_artifact:
+  stage: publish
+
+  script:
+    - inspec compliance login $AUTOMATE_SERVER_NAME --insecure --user=$AUTOMATE_USER --ent=$AUTOMATE_ENTERPRISE --dctoken=$DC_TOKEN
+    - inspec compliance upload . --overwrite
+    - inspec compliance logout

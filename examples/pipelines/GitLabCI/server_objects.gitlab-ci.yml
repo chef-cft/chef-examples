@@ -1,0 +1,35 @@
+image: "chef/chefdk"
+
+services:
+  - docker:dind
+
+before_script:
+  - echo $(admin-pem) | base64 -d > ~/.chef/admin.pem
+  - echo $(knife-rb) | base64 -d > ~/.chef/knife.rb
+
+stages:
+  - publish
+publish:
+  stage: publish
+  script: |
+    echo "Data bags aren\'t complete JSON files so we can\'t lint them."
+    for f in environments/*.json
+    do
+      cat $f | jq -e
+    done
+    for f in roles/*.json
+    do
+      cat $f | jq -e
+    done
+    for f in data_bags/*/*.json
+    do
+      knife data bag from file $f
+    done
+    for f in environments/*.json
+    do
+      knife environment from file $f
+    done
+    for f in roles/*.json
+    do
+      knife role from file $f
+    done

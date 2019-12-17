@@ -2,19 +2,7 @@
 
 This repo contains examples for pipelining Chef related artifacts using several of the popular CI/CD tools. While these examples should be functional and directly consumable, they are not exhaustive and only provide the minimum recommended steps. The author's expectation is that consumers will use these examples to get started then tailor them as needed in a continuous improvement fashion.
 
-## Before You Start
-
-### Assumptions
-
-* This assumes you have the ability to provision resources and/or enable the settings and options for your preferred CI/CD tool.
-
-### Tested Versions
-
-* [Azure DevOps](AzureDevOps/README.md) - [dev.azure.com](https://dev.azure.com)
-* [Jenkins](Jenkins/README.md) - [2.190.2](https://jenkins.io/download/)
-* [GitLab](GitLabCI/README.md) - [gitlab.com](https://www.gitlab.com)
-
-> NOTE: Clicking the tool name will provide tool specific detail with code examples.
+See the [Pipeline Details](PipelineDetails.md) if you want to jump straight in.
 
 ## Pipeline basics
 
@@ -74,7 +62,3 @@ The final topic in this readme is [InSpec](https://www.inspec.io) Profiles. As w
 Although InSpec can consume profiles from multiple sources, the general recommendation is store profiles in Automate. Regardless of the artifact location, the legacy audit cookbook will consume any updates to deployed profiles automatically. There are ways to pin versions to limit the risk of inadvertent deployments, however, profile versions can be overwritten so this entirely safe. With this pattern, the InSpec runs are triggered from the `chef-client` converge so if something breaks `chef-client`, you stop getting compliance reports.
 
 The modern effortless pattern for profiles follows the exact same flow as effortless pattern for cookbooks and Habitat Plans. As noted above, this gives better control over the release process. In the case of profiles, this also decouples the release cycles for the various tools allowing one to ship different code at different velocities.
-
-## FAQs
-
-1. [This section should be updated regularly as people ask about certain behaviors and you answer questions related to this example.]

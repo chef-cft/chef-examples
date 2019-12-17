@@ -1,0 +1,64 @@
+image: "chef/chefdk"
+
+services:
+  - docker:dind
+
+before_script:
+  - echo $(admin-pem) | base64 -d > ~/.chef/admin.pem
+  - echo $(knife-rb) | base64 -d > ~/.chef/knife.rb
+
+stages:
+  - test
+  - build
+  - publish
+  - promote_stg
+  - promote_prod
+
+cookstyle:
+  stage: test
+  script:
+    - chef exec cookstyle .
+
+chefspec:
+  stage: test
+  script:
+    - chef exec rspec .
+
+chefspec:
+  stage: test
+  script:
+    - chef exec kitchen test
+
+create_artifact:
+  stage: build
+  artifacts:
+    paths:
+      - Policyfile.lock.json
+  script:
+    - chef install
+
+publish_artifact:
+  stage: publish
+  artifacts:
+    paths:
+      - Policyfile.lock.json
+  script:
+    - chef push dev
+
+promote_stg:
+  stage: promote_stg
+  artifacts:
+    paths:
+      - Policyfile.lock.json
+  script:
+    - chef push stg
+  when: manual
+
+promote_prod:
+  stage: promote_prod
+  artifacts:
+    paths:
+      - Policyfile.lock.json
+  script:
+    - chef push prod
+  when: manual

@@ -36,7 +36,7 @@ pipeline {
                   done'''
           }
         }
-        stage('Checking Environments') {
+        stage('Upload Environments') {
           steps {
             sh '''for f in environments/*.json
                   do
@@ -44,7 +44,7 @@ pipeline {
                   done'''
           }
         }
-        stage('Checking Roles') {
+        stage('Upload Roles') {
           steps {
             sh '''for f in roles/*.json
                   do

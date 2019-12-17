@@ -8,8 +8,8 @@ pipeline {
     }
     stage('Dev Deployment') {
       steps {
-        sh '''source last_build.env
-              hab pkg upload ./habitat/results/$pkg_artifact'''
+        sh '''source results/last_build.env
+              hab pkg upload /results/$pkg_artifact'''
       }
     }
     stage('Approve Staging Deployment?') {
@@ -19,7 +19,8 @@ pipeline {
     }
     stage('Staging Deployment') {
       steps {
-        sh 'hab pkg promote $pkg_ident stg'
+        sh '''source results/last_build.env
+              hab pkg promote $pkg_ident stg'''
       }
     }
     stage('Approve Prod Deployment?') {
@@ -29,7 +30,8 @@ pipeline {
     }
     stage('Prod Deployment') {
       steps {
-        sh 'hab pkg promote $pkg_ident prod'
+        sh '''source results/last_build.env
+              hab pkg promote $pkg_ident prod'''
       }
     }
   }

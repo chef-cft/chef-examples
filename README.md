@@ -21,7 +21,7 @@ A collection of HowTo Chef examples to help you figure out how to do _that thing
 
 ## Other
 
-- [Example Pipelines](./examples/pipelines/README.md)
+- [Example Pipelines](./examples/pipelines/PipelineOverview.md)
 
 ### Contributing
 

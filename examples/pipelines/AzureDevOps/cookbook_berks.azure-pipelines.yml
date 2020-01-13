@@ -1,0 +1,55 @@
+trigger:
+- master
+
+stages:
+- stage: Testing
+  jobs:
+  - job: Testing
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: vsts-chef-task-install-chefdk@1
+      displayName: 'Install ChefDK'
+      env:
+        CHEF_LICENSE: accept
+    - task: CmdLine@2
+      displayName: 'Lint'
+      inputs:
+        script: chef exec cookstyle .
+      env:
+        CHEF_LICENSE: accept
+    - task: CmdLine@2
+      displayName: 'Unit'
+      inputs:
+        script: chef exec rspec .
+      env:
+        CHEF_LICENSE: accept
+    - task: CmdLine@2
+      displayName: 'Functional'
+      inputs:
+        script: echo "You should run kitchen test!"
+        #script: chef exec kitchen test
+      env:
+        CHEF_LICENSE: accept
+    - publish: $(System.DefaultWorkingDirectory)
+      artifact: cookbooks
+
+- stage: Publish
+  jobs:
+  - deployment: Berksfile
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: vsts-chef-task-install-chefdk@1
+            displayName: 'Install ChefDK'
+            env:
+              CHEF_LICENSE: accept
+          - task: vsts-chef-task-cookbook-upload@1
+            inputs:
+              chefServerEndpoint: 'chef-server'
+              chefCookbookPath: '$(Pipeline.Workspace)/cookbooks/'
+              deletePrivateKey: true

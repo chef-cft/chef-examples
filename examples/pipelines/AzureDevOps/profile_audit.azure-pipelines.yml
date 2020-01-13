@@ -1,0 +1,43 @@
+trigger:
+- master
+
+stages:
+- stage: Profile
+  jobs:
+  - job: Profile
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: vsts-chef-task-install-chefdk@1
+      displayName: 'Install ChefDK'
+      env:
+        CHEF_LICENSE: accept
+    - task: CmdLine@2
+      displayName: 'Validate Profile'
+      inputs:
+        script: inspec check .
+      env:
+        CHEF_LICENSE: accept
+    - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: 'MyAzureSubName(XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)'
+        KeyVaultName: 'MyAzureKeyVault'
+        SecretsFilter: '*'
+    - task: CmdLine@2
+      displayName: 'Log into Automate'
+      inputs:
+        script: inspec compliance login $(AUTOMATE_SERVER_NAME) --insecure --user=$(AUTOMATE_USER) --ent=$(AUTOMATE_ENTERPRISE) --dctoken=$(DC_TOKEN)
+      env:
+        CHEF_LICENSE: accept
+    - task: CmdLine@2
+      displayName: 'Upload Profile'
+      inputs:
+        script: inspec compliance upload . --overwrite
+      env:
+        CHEF_LICENSE: accept
+    - task: CmdLine@2
+      displayName: 'Log out of Automate'
+      inputs:
+        script: inspec compliance logout
+      env:
+        CHEF_LICENSE: accept

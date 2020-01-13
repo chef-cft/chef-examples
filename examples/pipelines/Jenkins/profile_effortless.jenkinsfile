@@ -1,0 +1,41 @@
+pipeline {
+  agent any
+  stages {
+    stage('Validate Profile') {
+      steps {
+        sh 'inspec check .'
+      }
+    }
+    stage('Build artifact') {
+      steps {
+        sh 'hab pkg build habitat/.'
+      }
+    }
+    stage('Dev Deployment') {
+      steps {
+        sh '''source last_build.env
+              hab pkg upload ./results/$pkg_artifact'''
+      }
+    }
+    stage('Approve Staging Deployment?') {
+      steps {
+        input "Deploy to Staging?"
+      }
+    }
+    stage('Staging Deployment') {
+      steps {
+        sh 'hab pkg promote $pkg_ident stg'
+      }
+    }
+    stage('Approve Prod Deployment?') {
+      steps {
+        input "Deploy to Prod?"
+      }
+    }
+    stage('Prod Deployment') {
+      steps {
+        sh 'hab pkg promote $pkg_ident prod'
+      }
+    }
+  }
+}

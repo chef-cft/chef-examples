@@ -1,0 +1,127 @@
+trigger:
+- master
+
+stages:
+- stage: Testing
+  jobs:
+  - job: Testing
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: vsts-chef-task-install-chefdk@1
+      displayName: 'Install ChefDK'
+      env:
+        CHEF_LICENSE: accept
+    - task: CmdLine@2
+      displayName: 'Lint'
+      inputs:
+        script: chef exec cookstyle .
+      env:
+        CHEF_LICENSE: accept
+    - task: CmdLine@2
+      displayName: 'Unit'
+      inputs:
+        script: chef exec rspec .
+      env:
+        CHEF_LICENSE: accept
+    - task: CmdLine@2
+      displayName: 'Functional'
+      inputs:
+        script: echo "You should run kitchen test!"
+        #script: chef exec kitchen test
+      env:
+        CHEF_LICENSE: accept
+    - publish: $(System.DefaultWorkingDirectory)
+      artifact: cookbooks
+
+- stage: Publish_Dev
+  jobs:
+  - deployment: PolicyFile
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: vsts-chef-task-install-chefdk@1
+            displayName: 'Install ChefDK'
+            env:
+              CHEF_LICENSE: accept
+          - script: |
+              cd $(Pipeline.Workspace)/cookbooks/
+              chef install
+            displayName: 'Collect Dependencies'
+            env:
+              CHEF_LICENSE: accept
+          - task: AzureKeyVault@1
+            inputs:
+              azureSubscription: 'MyAzureSubName(XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)'
+              KeyVaultName: 'MyAzureKeyVault'
+              SecretsFilter: '*'
+          - script: |
+              echo $(admin-pem) | base64 -d > ~/.chef/admin.pem
+              echo $(knife-rb) | base64 -d > ~/.chef/knife.rb
+              cd $(Pipeline.Workspace)/cookbooks/
+              chef push dev
+            displayName: 'Publish to Dev'
+            env:
+              CHEF_LICENSE: accept
+
+- stage: Promote_Stg
+  jobs:
+  - deployment: PolicyFile
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'stg'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: vsts-chef-task-install-chefdk@1
+            displayName: 'Install ChefDK'
+            env:
+              CHEF_LICENSE: accept
+          - task: AzureKeyVault@1
+            inputs:
+              azureSubscription: 'MyAzureSubName(XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)'
+              KeyVaultName: 'MyAzureKeyVault'
+              SecretsFilter: '*'
+          - script: |
+              mkdir ~/.chef
+              echo $(admin-pem) | base64 -d > ~/.chef/admin.pem
+              echo $(knife-rb) | base64 -d > ~/.chef/knife.rb
+              cd $(Pipeline.Workspace)/cookbooks/
+              chef push stg
+            displayName: 'Publish to Stage'
+            env:
+              CHEF_LICENSE: accept
+
+- stage: Promote_Prod
+  jobs:
+  - deployment: PolicyFile
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'prod'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: vsts-chef-task-install-chefdk@1
+            displayName: 'Install ChefDK'
+            env:
+              CHEF_LICENSE: accept
+          - task: AzureKeyVault@1
+            inputs:
+              azureSubscription: 'MyAzureSubName(XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)'
+              KeyVaultName: 'MyAzureKeyVault'
+              SecretsFilter: '*'
+          - script: |
+              mkdir ~/.chef
+              echo $(admin-pem) | base64 -d > ~/.chef/admin.pem
+              echo $(knife-rb) | base64 -d > ~/.chef/knife.rb
+              cd $(Pipeline.Workspace)/cookbooks/
+              chef push prod
+            displayName: 'Publish to Prod'
+            env:
+              CHEF_LICENSE: accept

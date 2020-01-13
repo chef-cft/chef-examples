@@ -1,0 +1,73 @@
+image: "chef/chefdk"
+
+services:
+  - docker:dind
+
+before_script:
+  - apt-get update
+  - apt-get install -y curl wget
+  - curl https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh | bash
+  - hab license accept
+  - echo $sig | base64 -d > /hab/cache/keys/origin-20191217002439.pub
+  - echo $key | base64 -d > /hab/cache/keys/origin-20191217002439.sig.key
+  - mkdir - p /hab/etc
+  - echo $cli | base64 -d > /hab/etc/cli.toml
+
+stages:
+  - test
+  - build
+  - publish
+  - promote_stg
+  - promote_prod
+
+cookstyle:
+  stage: test
+  script:
+    - chef exec cookstyle .
+
+chefspec:
+  stage: test
+  script:
+    - chef exec rspec .
+
+chefspec:
+  stage: test
+  script:
+    - chef exec kitchen test
+
+create_artifact:
+  stage: build
+  artifacts:
+    paths:
+      - results/
+  script:
+    - hab pkg build habitat/.
+
+publish_artifact:
+  stage: publish
+  artifacts:
+    paths:
+      - results/
+  script:
+    - source results/last_build.env
+    - hab pkg upload results/$pkg_artifact
+
+promote_stg:
+  stage: promote_stg
+  artifacts:
+    paths:
+      - results/
+  script:
+    - source results/last_build.env
+    - hab pkg promote $pkg_ident stg
+  when: manual
+
+promote_prod:
+  stage: promote_prod
+  artifacts:
+    paths:
+      - results/
+  script:
+    - source results/last_build.env
+    - hab pkg promote $pkg_ident prod
+  when: manual

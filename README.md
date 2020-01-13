@@ -1,24 +1,27 @@
 # Chef Examples
 
-A collection of HowTo Chef examples to help you figure out how to do
-_that thing you really want to do_ with Chef, Habitat, InSpec and anything else
-Chef-related. This repo is maintained by Chef, however, feel free to request 
-examples, or file PR's to provide examples to the Chef Community.
+A collection of HowTo Chef examples to help you figure out how to do _that thing you really want to do_ with Chef, Habitat, InSpec and anything else Chef-related. This repo is maintained by Chef, however, feel free to request examples, or file PR's to provide examples to the Chef Community.
+
+## Automate
+
+- [Setting Up SAML Auth in A2 with Okta](./examples/A2SamlWithOkta.md)
+- [Creating a Cookbook Pipeline Using Azure DevOps](./examples/AzureDevOpsCookbookPipeline.md)
+
+## Infra
+
+- [HowTo download then upload all Chef Cookbooks from one Chef Server to another](./examples/DownloadUploadCookbooks.md)
+- [Role Cookbook Model Explained](./examples/RoleCookbookModel.md)
+- [HowTo bootstrap an Azure VM using an ARM template & Policyfiles](./examples/AzureArmChefClientBootstrap/README.md)
+
+## InSpec
+
+- [Inspec example of checking Netbios configuration on Windows](./examples/InspecNetBiosQuery.md)
 
 ## Habitat
 
-## Chef Infra Server
-- [HowTo download then upload all Chef Cookbooks from one Chef Server to another](./examples/DownloadUploadCookbooks.md)
-- [Role Cookbook Model Explained](./examples/RoleCookbookModel.md)
+## Other
 
-## Chef Infra Client
-- [HowTo bootstrap an Azure VM using an ARM template & Policyfiles](./examples/AzureArmChefClientBootstrap/README.md)
-
-## Automate
-- [Setting Up SAML Auth in A2 with Okta](./examples/A2SamlWithOkta.md)
-- [Creating a Cookbook Pipeline Using Azure DevOps](./examples/AzureDevOpsCookbookPipeline.md)
-## InSpec
-- [Inspec example of checking Netbios configuration on Windows](./examples/InspecNetBiosQuery.md)
+- [Example Pipelines](./examples/pipelines/README.md)
 
 ### Contributing
 

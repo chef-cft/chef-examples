@@ -1,0 +1,122 @@
+trigger:
+- master
+
+stages:
+- stage: Testing
+  jobs:
+  - job: Testing
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: vsts-chef-task-install-chefdk@1
+      displayName: 'Install ChefDK'
+      env:
+        CHEF_LICENSE: accept
+    - task: CmdLine@2
+      displayName: 'Validate Profile'
+      inputs:
+        script: inspec check .
+      env:
+        CHEF_LICENSE: accept
+
+- stage: Build
+  jobs:
+  - job: Effortless
+    pool:
+      # If you are building a Windows package, you'll need to swap this to a windows image.
+      # name: Hosted VS2017
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: vsts-habitat-install@3
+      displayName: 'Install Habitat'
+    - task: vsts-habitat-signing-key@3
+      displayName: 'Signing Origin Key: install'
+      inputs:
+        habitatOrigin: bldr
+    - task: vsts-habitat-build@3
+      displayName: 'Build Habitat plan'
+      inputs:
+        habitatOrigin: bldr
+      env:
+        HAB_LICENSE: accept-no-persist
+    - task: vsts-habitat-expose-habitat-build-vars@3
+      displayName: 'Expose Habitat Build Variables'
+      inputs:
+        habitatSetBuildNumber: true
+    - publish: $(System.DefaultWorkingDirectory)/results
+      artifact: hart
+
+- stage: Publish_Dev
+  jobs:
+  - deployment: Effortless
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: vsts-habitat-install@3
+            displayName: 'Install Habitat'
+          - task: vsts-habitat-signing-key@3
+            displayName: 'Signing Origin Key: install'
+            inputs:
+              habitatOrigin: bldr
+          - script: |
+              source $(Pipeline.Workspace)/hart/last_build.env
+              echo "##vso[task.setvariable variable=pkg_artifact]$pkg_artifact"
+            displayName: 'Publish Artifact Name'
+          - task: vsts-habitat-pkg-upload@3
+            displayName: 'Package Upload'
+            inputs:
+              habitatOrigin: bldr
+              habitatPackagePath: '$(Pipeline.Workspace)/hart/$(pkg_artifact)'
+              habitatPackageChannel: dev
+            env:
+              HAB_LICENSE: accept-no-persist
+
+- stage: Promote_Stg
+  jobs:
+  - deployment: Effortless
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'stg'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: vsts-habitat-install@3
+            displayName: 'Install Habitat'
+          - task: vsts-habitat-signing-key@3
+            displayName: 'Signing Origin Key: install'
+            inputs:
+              habitatOrigin: bldr
+          - script: |
+              source $(Pipeline.Workspace)/hart/last_build.env
+              /tmp/hab pkg promote $pkg_ident stage
+            displayName: 'Promote to Stage'
+            env:
+              HAB_LICENSE: accept-no-persist
+
+- stage: Promote_Prod
+  jobs:
+  - deployment: Effortless
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'prod'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: vsts-habitat-install@3
+            displayName: 'Install Habitat'
+          - task: vsts-habitat-signing-key@3
+            displayName: 'Signing Origin Key: install'
+            inputs:
+              habitatOrigin: bldr
+          - script: |
+              source $(Pipeline.Workspace)/hart/last_build.env
+              /tmp/hab pkg promote $pkg_ident prod
+            displayName: 'Promote to Prod'
+            env:
+              HAB_LICENSE: accept-no-persist

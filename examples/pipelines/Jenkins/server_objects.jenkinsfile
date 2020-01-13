@@ -1,0 +1,58 @@
+pipeline {
+  agent any
+  stages {
+    stage('Verify') {
+      parallel {
+        stage('Checking Data Bags') {
+          steps {
+            sh 'echo "Data bags aren\'t complete JSON files so we can\'t lint them."'
+          }
+        }
+        stage('Checking Environments') {
+          steps {
+            sh '''for f in environments/*.json
+                  do
+                    cat $f | jq -e
+                  done'''
+          }
+        }
+        stage('Checking Roles') {
+          steps {
+            sh '''for f in roles/*.json
+                  do
+                    cat $f | jq -e
+                  done'''
+          }
+        }
+      }
+    }
+    stage('Upload') {
+      parallel {
+        stage('Upload Data Bags') {
+          steps {
+            sh '''for f in data_bags/*/*.json
+                  do
+                    knife data bag from file $f
+                  done'''
+          }
+        }
+        stage('Upload Environments') {
+          steps {
+            sh '''for f in environments/*.json
+                  do
+                    knife environment from file $f
+                  done'''
+          }
+        }
+        stage('Upload Roles') {
+          steps {
+            sh '''for f in roles/*.json
+                  do
+                    knife role from file $f
+                  done'''
+          }
+        }
+      }
+    }
+  }
+}

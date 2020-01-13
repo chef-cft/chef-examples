@@ -1,0 +1,54 @@
+pipeline {
+  agent any
+  stages {
+    stage('Verify') {
+      parallel {
+        stage('Lint/Syntax') {
+          steps {
+            sh 'chef exec cookstyle .'
+          }
+        }
+        stage('Unit') {
+          steps {
+            sh 'chef exec rspec .'
+          }
+        }
+        stage('Functional') {
+          steps {
+            sh 'kitchen test'
+          }
+        }
+      }
+    }
+    stage('Generate Lock File') {
+      steps {
+        sh 'chef install'
+      }
+    }
+    stage('Dev Deployment') {
+      steps {
+        sh 'chef push dev'
+      }
+    }
+    stage('Approve Staging Deployment?') {
+      steps {
+        input "Deploy to Staging?"
+      }
+    }
+    stage('Staging Deployment') {
+      steps {
+        sh 'chef push stg'
+      }
+    }
+    stage('Approve Prod Deployment?') {
+      steps {
+        input "Deploy to Prod?"
+      }
+    }
+    stage('Prod Deployment') {
+      steps {
+        sh 'chef push prod'
+      }
+    }
+  }
+}

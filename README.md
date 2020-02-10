@@ -11,6 +11,7 @@ A collection of HowTo Chef examples to help you figure out how to do _that thing
 
 - [HowTo download then upload all Chef Cookbooks from one Chef Server to another](./examples/DownloadUploadCookbooks.md)
 - [Role Cookbook Model Explained](./examples/RoleCookbookModel.md)
+- [Policyfiles Explained](./examples/policyfiles/README.md)
 - [HowTo bootstrap an Azure VM using an ARM template & Policyfiles](./examples/AzureArmChefClientBootstrap/README.md)
 
 ## InSpec

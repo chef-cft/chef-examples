@@ -15,7 +15,7 @@
 
 #### Azure AD Config
 1. In azure ad portal (https://portal.azure.com) under azure active directory and then under enterprise apps. Create a new Non-Gallery Application
-2. After naming it, Click on single signon and select SAML
+2. After naming it, click on single sign-on and select SAML
 3. In section 1 – Basic SAML Configuration, enter following:
    1. Identifier (Entity ID): https://serverfqdn/dex/callback
    1. Reply URL (Assertion Consumer Service URL): https://serverfqdn/dex/callback

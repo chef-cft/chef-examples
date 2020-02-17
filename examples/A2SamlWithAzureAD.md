@@ -52,7 +52,7 @@
 
 1. SSH to your A2 instance.
 2. Create a file called `saml.toml` where we will put in configuration information.
-3. In the `saml.toml` file, you will need to add the following information in the example format listed:
+3. In the `saml.toml` file, add the following information in the example format listed:
    1. `ca_contents`: this is the X.509 Certificate from step 5 above. Copy this and paste as the value for ca_contents. Use three double quotes to indicate a multiline string. (ex: `"""`)
    1. `sso_url`: This is the value for Identity Provider Single Sign-On URL using the Login URL Value from step 6 above.
    1. `email_attr`: The value for this should be `emailaddress`

@@ -19,7 +19,7 @@
 3. In section 1 – Basic SAML Configuration, enter following:
    1. Identifier (Entity ID): https://serverfqdn/dex/callback
    1. Reply URL (Assertion Consumer Service URL): https://serverfqdn/dex/callback
-4. In section 2: User Attributes and Claims check the defaults that are there.
+4. In section 2: User Attributes and Claims, check the defaults that are there.
    1. Keep:
       1. Required Claim:
          - Unique User Identifier (Name ID)

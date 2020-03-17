@@ -4,8 +4,9 @@ A collection of HowTo Chef examples to help you figure out how to do _that thing
 
 ## Automate
 
-- [Setting Up SAML Auth in A2 with Okta](./examples/A2SamlWithOkta.md)
+- [Setting Up SAML Auth in Automate with Okta](./examples/A2SamlWithOkta.md)
 - [Creating a Cookbook Pipeline Using Azure DevOps](./examples/AzureDevOpsCookbookPipeline.md)
+- [Set up Automate to use RDS Aurora Postgres + AWS Elastisearch Service Backends](./examples/a2-aws-backends/a2-aws-backends.md)
 
 ## Infra
 

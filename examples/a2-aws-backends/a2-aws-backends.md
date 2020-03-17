@@ -1,7 +1,7 @@
 # HowTo - Install Chef Automate with AWS RDS Postgres and AWS Elasticsearch Backends
 
-This guide will show you how to setup your A2 server using external Postgres and
-Elasticsearch. Allowing you to offload the database operations of A2 to AWS instead 
+This guide will show you how to setup your Chef Automate server using external Postgres and
+Elasticsearch. Allowing you to offload the database operations of Chef Automate to AWS instead 
 of managing them in-house.
 
 ## Before You Start

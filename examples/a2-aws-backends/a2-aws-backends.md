@@ -1,4 +1,4 @@
-# HowTo - Install Chef Automate with AWS RDS Postgres and AWS Elasticsearch Backends
+# HowTo - Install Chef Automate & Chef Infra Server with AWS RDS Postgres and AWS Elasticsearch Backends
 
 This guide will show you how to setup your Chef Automate server using external Postgres and
 Elasticsearch. Allowing you to offload the database operations of Chef Automate to AWS instead 
@@ -225,8 +225,9 @@ AWS signs their own certs now with their own CA, we need to download those and m
         # Habitat channel to install hartifact from.
         # Can be 'dev', 'current', or 'acceptance'
         channel = "current"
-        upgrade_strategy = "at-once"
+        upgrade_strategy = "none"
         deployment_type = "local"
+        products=["automate", "chef-server"]  
 
     # License Control service configuration.
     [license_control.v1]

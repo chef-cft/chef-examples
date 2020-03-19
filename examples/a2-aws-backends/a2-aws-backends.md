@@ -84,7 +84,7 @@ _The plan is to have Terraform code for this as well, I will update when ready_
 
 ### Create RDS Postgres `dbuser` and Assign Role to `postgres`
 1. Centos 7 doesn't have the `psql` client installed by default, so let's download it using `yum`:
-   `sudo yum install postgres`
+   `sudo yum install postgresql`
 1. Now let's connect to our RDS Aurora Postgres endpoint with the credentials we configured in Part 2.
 1. Command:
    ```

@@ -4,6 +4,10 @@ This guide will show you how to setup your Chef Automate server using external P
 Elasticsearch. Allowing you to offload the database operations of Chef Automate to AWS instead 
 of managing them in-house.
 
+## Arch Diagram:
+
+![arch diagram](./images/Cloud-backends.png)
+
 ## Before You Start
 
 ### Assumptions

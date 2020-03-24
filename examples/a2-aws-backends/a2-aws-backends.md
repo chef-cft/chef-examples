@@ -239,14 +239,7 @@ AWS signs their own certs now with their own CA, we need to download those and m
         # The Chef Software provided license token required to run Chef Automate.
         # This can also be set with the "chef-automate license apply" command.
         license = ""
-
-    # Chef Automate services can be configured to better meet the needs of
-    # your particular installation. For details see:
-    #
-    # https://automate.chef.io/docs/configuration/
-    #
-    [elasticsearch.v1.sys.runtime]
-    heapsize = "2g"
+        
     # Add this because our CA root chain is LOOONG
     [esgateway.v1.sys.ngx.http]
     ssl_verify_depth = 1000

@@ -7,6 +7,7 @@ A collection of HowTo Chef examples to help you figure out how to do _that thing
 - [Setting Up SAML Auth in Automate with Okta](./examples/A2SamlWithOkta.md)
 - [Creating a Cookbook Pipeline Using Azure DevOps](./examples/AzureDevOpsCookbookPipeline.md)
 - [Set up Automate + Chef Infra Server to use RDS Aurora Postgres + AWS Elastisearch Service Backends](./examples/a2-aws-backends/a2-aws-backends.md)
+- [Setup Automate with Let's Encrypt SSL Cert](./examples/A2WithLetsEncryptSSLCert.md)
 
 ## Infra
 

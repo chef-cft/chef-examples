@@ -2,6 +2,8 @@
 
 A collection of HowTo Chef examples to help you figure out how to do _that thing you really want to do_ with Chef, Habitat, InSpec and anything else Chef-related. This repo is maintained by Chef, however, feel free to request examples, or file PR's to provide examples to the Chef Community.
 
+Note: USE AT YOUR OWN RISK!
+
 ## Automate
 
 - [Setting Up SAML Auth in Automate with Okta](./examples/A2SamlWithOkta.md)

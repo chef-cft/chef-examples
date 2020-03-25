@@ -1,5 +1,7 @@
 # HowTo - Install Chef Automate & Chef Infra Server with AWS RDS Postgres and AWS Elasticsearch Backends
 
+## USE AT YOUR OWN RISK, the support model for this is currently being worked out, please contact your CS team for any support.
+
 This guide will show you how to setup your Chef Automate server using external Postgres and
 Elasticsearch. Allowing you to offload the database operations of Chef Automate to AWS instead 
 of managing them in-house.

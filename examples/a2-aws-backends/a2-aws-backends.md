@@ -6,6 +6,12 @@ This guide will show you how to setup your Chef Automate server using external P
 Elasticsearch. Allowing you to offload the database operations of Chef Automate to AWS instead 
 of managing them in-house.
 
+### Current Limitations
+* Does not support Supermarket currently, to use Supermarket you'll have to setup a separate Chef Infra Server to act as the oauth provider.
+* No custom `chef-server.rb` can be defined
+* This deployment method for Chef Infra is assuming you will be using a pipeline to deliver changes to your Chef Infra Server for all objects (cookbooks, data bags, etc...) and will not be creating users other than the one(s) needed for pipelining the process.
+* there be dragons, make sure to work with your CS team when using this
+
 ## Arch Diagram:
 
 ![arch diagram](./images/Cloud-backends.png)

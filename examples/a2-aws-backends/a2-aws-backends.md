@@ -10,7 +10,7 @@ of managing them in-house.
 * Does not support Supermarket currently, to use Supermarket you'll have to setup a separate Chef Infra Server to act as the oauth provider.
 * No custom `chef-server.rb` can be defined
 * This deployment method for Chef Infra is assuming you will be using a pipeline to deliver changes to your Chef Infra Server for all objects (cookbooks, data bags, etc...) and will not be creating users other than the one(s) needed for pipelining the process.
-* there be dragons, make sure to work with your CS team when using this
+* Chef-Manage is not supported with this deployment model, as it is currently deprecated, and some of it's features are being migrated to Automate: https://docs.chef.io/versions/#deprecated-products-and-versions 
 
 ## Arch Diagram:
 

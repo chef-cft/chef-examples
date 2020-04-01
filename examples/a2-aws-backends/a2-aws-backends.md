@@ -203,6 +203,12 @@ AWS signs their own certs now with their own CA, we need to download those and m
     enable = true
     nodes = ["https://<ES ENDPOINT FQDN, FORMATTED EXAMPLE BELOW>:443"]
     # nodes = ["https://vpc-automate-es-qejobocqaanhwp7mw7sqt47yhe.us-east-1.es.amazonaws.com:443"]
+    
+    # [global.v1.external.elasticsearch.auth]
+    # scheme = "basic_auth"
+    # [global.v1.external.elasticsearch.auth.basic_auth]
+    #  username = "<admin username>"
+    #  password = "<admin password>"
 
     [global.v1.external.elasticsearch.ssl]
     root_cert = """

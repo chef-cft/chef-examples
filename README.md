@@ -16,6 +16,7 @@ Note: USE AT YOUR OWN RISK!
 - [HowTo download then upload all Chef Cookbooks from one Chef Server to another](./examples/DownloadUploadCookbooks.md)
 - [Role Cookbook Model Explained](./examples/RoleCookbookModel.md)
 - [HowTo bootstrap an Azure VM using an ARM template & Policyfiles](./examples/AzureArmChefClientBootstrap/README.md)
+- [Set up SendGrid in Azure and connect it to a Chef Server to send email notifications](./examples/ChefServerSMTPAzure.md)
 
 ## InSpec
 

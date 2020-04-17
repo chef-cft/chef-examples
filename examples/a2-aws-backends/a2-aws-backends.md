@@ -168,6 +168,8 @@ AWS signs their own certs now with their own CA, we need to download those and m
 
 1. Follow the instructions here to download A2 and generate a `config.toml`: 
    * https://automate.chef.io/docs/install/
+1. Create an Airgap Bundle, this is important as it's going to lock Automate at a specific version which is important if you 
+intend to create additional nodes. https://automate.chef.io/docs/airgapped-installation/#create-an-airgap-installation-bundle
 1. Copy the contents of your `config.toml` to your favorite text editor, because we're about to do some major editing :).
 1. Below is a working `config.toml`, with the SSL certs shortened for readability:
     ```toml
@@ -263,7 +265,7 @@ AWS signs their own certs now with their own CA, we need to download those and m
 
 ## Part 4 of 4 - Deploy Automate!
 
-1. On the EC2 instance, let's now run the `deploy` with the new `config.toml`
+1. On the EC2 instance, let's now run the `deploy` with the new `config.toml` [using the Airgap bundle](https://automate.chef.io/docs/airgapped-installation/#deploy-chef-automate).
 1. When done, you should see something like this:
     ```
     .......
@@ -285,6 +287,11 @@ AWS signs their own certs now with their own CA, we need to download those and m
     ```
 1. Get your credentials from the `credentials.toml` file and login, and you're all set!
 
+## Next
+
+1. Adding another Frontend node [README](../bootstrap-bundle/README.md)
+1. Upgrades
+1. Backups
 
 ## FAQs
 

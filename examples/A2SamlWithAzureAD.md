@@ -59,3 +59,4 @@
    1. `username_attr`: The value for this should be `username`
    1. `entity_issuer`: This should be the URL for your automate server plus `/dex/callback`. (ex: https://serverfqdn/dex/callback)
    1. Save and close the file.
+4. Run `chef-automate config patch saml.toml` to apply the changes to Chef Automate without restarting all of the services.

@@ -2,6 +2,10 @@
 
 This document contains example details and tool specific instructions. While these examples should be functional and directly consumable, they are not exhaustive and only provide the minimum recommended steps. The author's expectation is that consumers will use these examples to get started then tailor them as needed in a continuous improvement fashion.
 
+Examples:
+
+* [Azure DevOps](./AzureDevOps)
+
 ## Before You Start
 
 ### Assumptions
@@ -15,9 +19,11 @@ This document contains example details and tool specific instructions. While the
 
 ### Tested Versions
 
-* Azure DevOps - [dev.azure.com](https://dev.azure.com)
-* Jenkins - [2.190.2](https://jenkins.io/download/)
-* GitLab - [gitlab.com](https://www.gitlab.com)
+| CI/CD Tool | Vendor Link | Example Files |
+| ----- | ----- | ----- |
+|Azure DevOps | [dev.azure.com](https://dev.azure.com) | [azure-pipeline.yml](./AzureDevOps/) |
+| Jenkins | [2.190.2](https://jenkins.io/download/) | [jenkinsfile](./Jenkins/) |
+| GitLab | [gitlab.com](https://www.gitlab.com) | [gitlab-ci.yml](./GitLabCI/) |
 
 ## Instructions
 

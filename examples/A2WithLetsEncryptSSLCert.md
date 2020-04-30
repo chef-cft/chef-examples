@@ -17,7 +17,6 @@ This guide will walk you through creating an SSL cert with Lets Encrypt then app
 #### A subdomain is setup
 
 - You own a domain name (ex: `your-name.com`) and have a domain provider (such as Netlify, GoDaddy, etc.)
-- You've set a CNAME record from your subdomain to your domain (ex: `automate.your-name.com` points to the value `your-name.com`)
 - You've set an A record from your subdomain to the public IP (ex: `automate.your-name.com` points to `34.210.219.228`)
 
 At this point, if you can hit the public IP in a web browser and login with the credentials found in `automate-credentials.toml` you are **good to proceed.**

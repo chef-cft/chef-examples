@@ -1,0 +1,55 @@
+---
+driver:
+  name: gce
+  project: <%= ENV['GCP_PROJECT'] %>
+  region: <%= ENV['GCP_REGION'] %>
+  email: <%= ENV['USER'] + '@chef.io' %>
+  metadata:
+    X-Contact: <%= ENV['USER'] %>
+    X-Application: test-kitchen
+    X-Dept: <%= ENV['X_DEPT'] %>
+    X-TTL: 4
+
+provisioner:
+  name: chef_zero
+
+verifier:
+  name: inspec
+
+transport:
+  username: <%= ENV['USER'] %>
+  ssh_key: ~/.ssh/google_compute_engine
+
+platforms:
+  - name: centos-7
+    driver:
+      image_project: centos-cloud
+      image_family: centos-7
+  - name: ubuntu-18.04
+    driver:
+      image_project: ubuntu-os-cloud
+      image_family: ubuntu-1804-lts
+  - name: windows-2012r2
+    driver:
+      image_project: windows-cloud
+      image_family: windows-2012-r2
+      machine_type: n1-standard-2
+      disk_size: 75
+    transport:
+      name: winrm
+      elevated: true
+  - name: windows-2016
+    driver:
+      image_project: windows-cloud
+      image_family: windows-2016
+      machine_type: n1-standard-2
+      disk_size: 75
+    transport:
+      name: winrm
+      elevated: true
+
+suites:
+  - name: default
+    run_list:
+      #- recipe[_gcp::default]
+    attributes:

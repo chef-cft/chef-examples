@@ -1,0 +1,55 @@
+---
+driver:
+  name: azurerm
+  azure_resource_group_prefix: kitchen-<%= ENV['USER'] %>-
+  resource_group_tags: &tags
+    X-Contact: <%= ENV['USER'] %>
+    X-Application: test-kitchen
+    X-Dept: <%= ENV['X_DEPT'] %>
+    X-TTL: 4
+  vm_tags: *tags
+
+driver_config:
+  subscription_id: <%= ENV['AZURE_SUBSCRIPTION_ID'] %>
+  location: <%= ENV['AZURE_LOCATION'] %>
+  machine_size: 'Standard_D2_v2'
+
+provisioner:
+  name: chef_zero
+  always_update_cookbooks: true
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: centos-7
+    driver_config:
+      image_urn: OpenLogic:CentOS:7.4:latest
+    transport:
+      ssh_key: <%= ENV['AZURE_SSH_KEY_PATH'] %>
+  - name: ubuntu-16.04
+    driver_config:
+      image_urn: Canonical:UbuntuServer:16.04-LTS:latest
+    transport:
+      ssh_key: <%= ENV['AZURE_SSH_KEY_PATH'] %>
+  - name: windows-2012r2
+    driver_config:
+      image_urn: MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:latest
+    transport:
+      name: winrm
+      elevated: true
+  - name: windows-2016
+    driver_config:
+      image_urn: MicrosoftWindowsServer:WindowsServer:2016-Datacenter:latest
+    transport:
+      name: winrm
+      elevated: true
+
+suites:
+  - name: default
+    run_list:
+      #- recipe[_azure::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:

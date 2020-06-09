@@ -1,0 +1,44 @@
+---
+driver:
+  name: dokken
+  chef_version: latest
+
+transport:
+  name: dokken
+
+provisioner:
+  name: dokken
+
+verifier:
+  name: inspec
+
+# Recommended platform image names
+# https://github.com/someara/dokken-images
+platforms:
+  - name: centos-7
+    driver:
+      image: dokken/centos-7
+#      privileged: true
+#      pid_one_command: /usr/lib/systemd/systemd
+#      volumes:
+#        - /sys/fs/cgroup:/sys/fs/cgroup:ro # required by systemd
+  - name: ubuntu-16.04
+    driver:
+      image: dokken/ubuntu-16.04
+#      privileged: true
+#      pid_one_command: /bin/systemd
+#      volumes:
+#        - /sys/fs/cgroup:/sys/fs/cgroup:ro # required by systemd
+  - name: amazonlinux
+    driver:
+      image: dokken/amazonlinux
+#      pid_one_command: /sbin/init
+
+suites:
+  - name: default
+    run_list:
+      #- recipe[_dokken::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:

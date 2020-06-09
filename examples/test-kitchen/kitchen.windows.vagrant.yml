@@ -1,0 +1,43 @@
+driver:
+  name: vagrant
+
+transport:
+  name: winrm
+  elevated: true
+
+provisioner:
+  name: chef_zero
+  # You may wish to disable always updating cookbooks in CI or other testing environments.
+  # For example:
+  #   always_update_cookbooks: <%= !ENV['CI'] %>
+  always_update_cookbooks: true
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: windows-10
+    driver:
+      box: tas50/windows_10
+  - name: windows-2008r2
+    driver:
+      box: tas50/windows_2008r2
+  - name: windows-2012r2
+    driver:
+      box: tas50/windows_2012r2
+  - name: windows-2016
+    driver:
+      box: tas50/windows_2016
+  - name: windows-2019
+    driver:
+      box: tas50/windows_2019
+
+suites:
+  - name: default
+    run_list:
+      # - recipe[foo::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+

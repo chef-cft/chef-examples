@@ -1,0 +1,53 @@
+---
+driver:
+  name: ec2
+  aws_ssh_key_id: <%= ENV['AWS_SSH_KEY_NAME'] %>
+  region: <%= ENV['AWS_REGION'] %>
+  associate_public_ip: true
+#  instance_type: m5.large
+#  retryable_sleep: 10 # May be required with Windows
+#  retryable_tries: 60 # May be required with Windows
+  tags:
+    X-Contact: <%= ENV['USER'] %>
+    X-Application: test-kitchen
+    X-Dept: <%= ENV['X_DEPT'] %>
+    X-TTL: 4
+
+provisioner:
+  name: chef_zero
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: centos-7
+    driver:
+      # Irving CentOS AMIs
+      # https://github.com/irvingpop/packer-chef-highperf-centos7-ami
+      image_id: ami-05c8e42d85f60b86b
+    transport:
+      username: centos
+      ssh_key: <%= ENV['AWS_SSH_KEY_PATH'] %>
+  - name: ubuntu-16.04
+    transport:
+      username: ubuntu
+      ssh_key: <%= ENV['AWS_SSH_KEY_PATH'] %>
+  - name: windows-2012r2
+    transport:
+      name: winrm
+      elevated: true
+      ssh_key: <%= ENV['AWS_SSH_KEY_PATH'] %>
+  - name: windows-2016
+    transport:
+      name: winrm
+      elevated: true
+      ssh_key: <%= ENV['AWS_SSH_KEY_PATH'] %>
+
+suites:
+  - name: default
+    run_list:
+      #- recipe[_aws::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:

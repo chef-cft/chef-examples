@@ -28,6 +28,7 @@ Note: USE AT YOUR OWN RISK!
 ## Other
 
 - [Example Pipelines](./examples/pipelines/PipelineOverview.md)
+- [Test Kitchen](./examples/test-kitchen/README.md)
 
 ### Contributing
 

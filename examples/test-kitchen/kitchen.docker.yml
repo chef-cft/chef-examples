@@ -1,0 +1,29 @@
+---
+driver:
+  name: docker
+  privileged: true
+  use_sudo: false
+
+provisioner:
+  name: chef_zero
+  always_update_cookbooks: true
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: ubuntu-16.04
+  - name: centos-7.2
+  - name: amazonlinux
+    driver_config:
+      image: amazonlinux:latest
+      platform: rhel
+
+suites:
+  - name: default
+    run_list:
+      #- recipe[_docker::default]
+    verifier:
+      inspec_tests:
+        - test/integrationkit/default
+    attributes:

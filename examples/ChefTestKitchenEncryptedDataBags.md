@@ -89,7 +89,7 @@ a file.
         ```
     * For Mac/Linux:
         ```
-        openssl rand -base64 512 | tr -d '\r\n' > ./test/fixtures encrypted_data_bag_secret
+        openssl rand -base64 512 | tr -d '\r\n' > ./test/fixtures/encrypted_data_bag_secret
         ```
 
 ## Step 3 - Create your Encrypted Data Bag

@@ -22,7 +22,7 @@ Note: USE AT YOUR OWN RISK!
 ## InSpec
 
 - [Inspec example of checking Netbios configuration on Windows](./examples/InspecNetBiosQuery.md)
-- [Inspec example of verifying Local Administrators on Windows](./examples/InspecVerifyWindowsAdministrators.md)
+- [Inspec example of verifying Local Administrators on Windows](./examples/InSpecVerifyWindowsAdministrators.md)
 
 ## Habitat
 

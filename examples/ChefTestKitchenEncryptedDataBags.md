@@ -87,7 +87,7 @@ contribute :)_ :
     openssl rand -base64 512 | tr -d '\r\n' > ./test/fixtures encrypted_data_bag_secret
     ```
 
-## Step 2 - Create your Encrypted Data Bag
+## Step 3 - Create your Encrypted Data Bag
 1. Next, we'll create the Encrypted Data Bag using `--local-mode`, from the root
 of the cookbook directory, run the following command:
     ```
@@ -132,7 +132,7 @@ contents of the local data bag, notice the token istelf is encrypted:
 1. You can now safely delete your `hab.json` file, or move it somewhere out of
 the cookbook directory so it's not accidentally committed to SCM.
 
-## Step 3 - Put it all together in Test Kitchen
+## Step 4 - Put it all together in Test Kitchen
 Now that we've created an encrypted data bag in local mode, we need to make it
 work with Test Kitchen.
 

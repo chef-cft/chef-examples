@@ -17,12 +17,47 @@ https://docs.chef.io/data_bags/#encrypt-a-data-bag-item.
 * Chef Workstation | [`20.6.x`] (should be fine with any version of Chef 
 Workstation)
 
-## Step 1 - Create your Encrypted Data Bag Secret
+## Step 1 - Create local Chef Zero Repo and Update Workstation Config
+If you already have a local repo, you can skip this step, if you don't, or are
+scratching your head as to what that is, then follow these steps.
+
+1. For Windows/Mac/Linux: perform the following commands from a Terminal or
+Powershell prompt:
+    ```
+    # Note, "/" characters should work in modern Windows versions, 
+    # however you may need to substitute "/" with "\" in the following 
+    # commands for Windows
+    cd ~/.chef
+    # Generate a local repo
+    chef generate repo chef-zero-repo
+    cd ./chef-zero-repo/data_bags
+    # Perform the following command to create a "data bag"
+    mkdir credentials
+    ```
+1. You've just created a "data bag" on your local repo with no items in it.
+1. Note, any time you want to create a local data bag, you first need to create
+the directory with the same name as the data bag in your 
+`~/.chef/chef-zero-repo/data_bags` directory, otherwise, your data bag will fail
+to create.
+1. Next, let's open our `~/.chef/config.rb` file and add the following line to 
+the end:
+    ```
+    # For Mac/Linux
+    chef_repo_path           "#{ENV['HOME']}/.chef/chef-zero-repo/"
+
+    # For Windows
+    chef_repo_path           "#{ENV['HOME']}\\.chef\\chef-zero-repo\\"
+    ```
+    This will tell Chef Workstation to use the newly created repo for storing
+    local mode artifacts.
+
+## Step 2 - Create your Encrypted Data Bag Secret
 We're going to create a data bag called "credentials" and we're going to put
 some secrets in it.
 
 1. From inside your cookbook root, create the following directories if they 
-don't exist:
+don't exist (note `credentials` is the name of our data bag we're testing with,
+just repeat this step with `<your data bag name>` when doing this for real):
     ```
     test
     └── fixtures
@@ -58,8 +93,9 @@ of the cookbook directory, run the following command:
     ```
     knife data bag from file credentials hab.json --local-mode --secret-file ./test/fixtures/encrypted_data_bag_secret
     ```
-1. What just happened? Chef Infra Client ran in local mode, created a directory
-and file in your `$HOME` folder called `data_bags/credentials/hab.json` with the
+1. What just happened? Chef Infra Client ran in local mode, and created an
+encrypted version of `hab.json` in your local Chef Zero Repo, in 
+`~/.chef/chef-zero-repo/data_bags/credentials/hab.json` with the
 encrypted contents of the `hab.json` you created in step 1.3. Let's view the
 contents of the local data bag, notice the token istelf is encrypted:
     ```
@@ -103,7 +139,7 @@ work with Test Kitchen.
 1. First, we need to copy the `hab.json` data bag item over to the local 
 cookbook, we'll do that by running this command from the cookbook root:
     ```
-    cp ~/data_bags/credentials/hab.json ./test/fixtures/data_bags/credentials/
+    cp ~/.chef/chef-zero-repo/data_bags/credentials/hab.json ./test/fixtures/data_bags/credentials/
     ```
 1. Next, edit your `kitchen.yml` file and add the following to the 
 `provisioner:` section:

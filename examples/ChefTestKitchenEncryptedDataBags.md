@@ -18,9 +18,13 @@ https://docs.chef.io/data_bags/#encrypt-a-data-bag-item.
 Workstation)
 
 ## Step 1 - Create local Chef Zero Repo and Update Workstation Config
-If you already have a local repo, you can skip this step, if you don't, or are
-scratching your head as to what that is, then follow these steps.
-
+If you already have a local repo, run the following commands from a
+Terminal:
+```
+cd <your-repo-directory>/data_bags
+mkdir credentials
+```
+Otherwise, continue with the steps below:
 1. For Windows/Mac/Linux: perform the following commands from a Terminal or
 Powershell prompt:
     ```
@@ -67,8 +71,9 @@ just repeat this step with `<your data bag name>` when doing this for real):
 1. In the above, `data_bags` is the path that will be referenced in Test Kitchen
 for all data bags used. `credentials` represents the `data bag` that will be 
 used.
-1. Next, create a file called `hab.json`, in it we're going to store some fake
-Habitat credentials, add this to the file and save it:
+1. Next, create a file called `hab.json` in the root of your cookbook directory,
+in it we're going to store some fakeHabitat credentials, add this to the file 
+and save it:
     ```json
     {
         "id": "hab",
@@ -76,16 +81,16 @@ Habitat credentials, add this to the file and save it:
     }
     ```
 1. Now we're going to generate an encryption key, and we're going to save it to
-a file. We'll use `openssl` to do this, I recommend using Chocolatey for Windows
-to install (`choco install openssl`), and Homebrew for Mac (`brew install
- openssl`), it's usually already installed in Linux. Once you have the OpenSSL 
-binary installed, run the following command to generate a Chef compatible key 
-(from within the root of your cookbook directory) _Note, this is the command for
-Mac, please make a PR with the correct syntax for Windows if you want to 
-contribute :)_ :
-    ```
-    openssl rand -base64 512 | tr -d '\r\n' > ./test/fixtures encrypted_data_bag_secret
-    ```
+a file. 
+    * For Windows:
+        ```
+        # Use the CW Powershell Application
+        openssl rand -base64 512 | tr -d '\r\n' > .\test\fixtures\encrypted_data_bag_secret
+        ```
+    * For Mac/Linux:
+        ```
+        openssl rand -base64 512 | tr -d '\r\n' > ./test/fixtures encrypted_data_bag_secret
+        ```
 
 ## Step 3 - Create your Encrypted Data Bag
 1. Next, we'll create the Encrypted Data Bag using `--local-mode`, from the root

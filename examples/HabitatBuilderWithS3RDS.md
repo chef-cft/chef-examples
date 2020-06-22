@@ -19,21 +19,21 @@ These instructions will allow a highly-available on-premise depot installation l
 
 ## Setup On-Premise Depot to Leverage RDS and S3
 
-1. Download the Zip archive of the on-prem-builder repo
+1. Download the Zip archive of the on-prem-builder repo:<br />
 `curl -LO https://github.com/habitat-sh/on-prem-builder/archive/master.zip`
-2. Download the Chef Habitat cli tool
+2. Download the Chef Habitat cli tool:<br />
 `curl -Lo hab.tar.gz https://api.bintray.com/content/habitat/stable/linux/x86_64/hab-%24latest-x86_64-linux.tar.gz`
-3. From the zip archive, install the hab binary somewhere in $PATH and ensure it has execute permissions:
+3. From the zip archive, install the hab binary somewhere in $PATH and ensure it has execute permissions:<br />
 `sudo chmod 755 /usr/bin/hab`<br />
 `sudo hab # read the license and accept if in agreement, as the root user`<br />
-4. Import the public package signing keys from the downloaded Builder package bundle:
+4. Import the public package signing keys from the downloaded Builder package bundle:<br />
 `export UNZIP_DIR=/some/base/unzip/directory`<br />
 `for file in $(ls ${UNZIP_DIR}/builder_packages/keys/*pub); do cat $file | sudo hab origin key import;done`
-5. Create a Habitat artifact cache directory, place the Builder *.hart packages into that directory and then pre-install the Builder Services:
+5. Create a Habitat artifact cache directory, place the Builder *.hart packages into that directory and then pre-install the Builder Services:<br />
 `sudo mkdir -p /hab/cache/artifacts`<br />
 `sudo mv ${UNZIP_DIR}/builder_packages/artifacts/*hart /hab/cache/artifacts`<br />
 `sudo hab pkg install /hab/cache/artifacts/habitat-builder*hart`
-6. Pre-install the Habitat Supervisor and its dependencies:
+6. Pre-install the Habitat Supervisor and its dependencies:<br />
 `sudo hab pkg install --binlink --force /hab/cache/artifacts/core-hab-*hart`
 7. Clone the Habitat Builder repository to the target machine: habitat-sh/on-prem-builder 
 `cd ${SRC_ROOT}`<br />
@@ -56,6 +56,7 @@ To enable S3 instead of the local Minio, modify these values:
 `export S3_ACCESS_KEY=depotaccesskey #update to match your S3 geared creds`<br />
 `export S3_SECRET_KEY=depotsecretkey #update to match your S3 geared creds`<br />
 `./install.sh`<br />
-`sudo systemctl restart hab-sup`
-9. Check the service status: `hab svc status`
+`sudo systemctl restart hab-sup`<br />
+9. Check the service status:<br />
+`hab svc status`<br />
 10. Follow the instructions at: https://github.com/habitat-sh/on-prem-builder/blob/master/on-prem-docs/bootstrap-core.md to get your packages from one builder to another.

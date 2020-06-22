@@ -6,12 +6,12 @@ These instructions will allow a highly-available on-premise depot installation l
 ### Assumptions
 
 * New Instance:
-**  16 Cores
-** 32 GB RAM
-** /hab partitioned to a 20 GB volume
-** /tmp partitioned to a 50 GB volume
-** Communication opened on 443, 80, Postgres RDS port
-** Able to get root access
+  * 16 Cores
+  * 32 GB RAM
+  * /hab partitioned to a 20 GB volume
+  * /tmp partitioned to a 50 GB volume
+  * Communication opened on 443, 80, Postgres RDS port
+  * Able to get root access
 
 ### Tested Versions
 

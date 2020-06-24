@@ -139,5 +139,5 @@ bad example text here
 1. How do I return the matched text, or a portion of it, for testing specific values?<br />
 $ combined with a matcher will return that match. This will allow partial matches on a value. ‘…’ will return an array, while ‘_’ will return a string.
 2. The matches aren't returning as expected using the generated AST. What's wrong?<br /> 
-Use `send nil?` instead of `send nil`.<br /> 
+Use `:send, nil?` instead of `:send, nil`.<br /> 
 Examples: $... will return an array of matches, $_ will return a string.

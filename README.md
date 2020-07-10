@@ -17,8 +17,8 @@ Note: USE AT YOUR OWN RISK!
 - [HowTo download then upload all Chef Cookbooks from one Chef Server to another](./examples/DownloadUploadCookbooks.md)
 - [Role Cookbook Model Explained](./examples/RoleCookbookModel.md)
 - [HowTo bootstrap an Azure VM using an ARM template & Policyfiles](./examples/AzureArmChefClientBootstrap/README.md)
-- [The Definitive Policyfile Implementation Guide](./examples/ChefPolicyFileAutomation.md)
-- [The Definitive Policyfile Automation Guide](./examples/ChefPolicyfileWorkflow.md)
+- [The Definitive Policyfile Implementation Guide](./examples/ChefPolicyFileWorkflow.md)
+- [The Definitive Policyfile Automation Guide](./examples/ChefPolicyfileAutomation.md)
 
 ## InSpec
 

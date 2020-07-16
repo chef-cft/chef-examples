@@ -41,7 +41,12 @@
   - Place both the user and validator pem files in the home directory
   - Assign the IP of `10.11.12.13` to the chef infra server on the private network
     - Update the `BOX_IP` if this IP address is in use on the network
-- No certificate is installed during this process.  A cert warning will occur if trying to hit the front end.
+- **No certificate is installed during this process.**  A cert warning will occur if trying to hit the front end.
+  - If configuring a `knife.rb` or `config.rb` and a cert is not installed, add the following line:
+    - `ssl_verify_mode          :verify_none`
+- To export .pem(s) on the local machine go into the directory where the `Vagrantfile` is and run:
+  - `vagrant ssh -c "sudo cat /home/vagrant/vagrant-user.pem" > vagrant-user.pem`
+  - `vagrant ssh -c "sudo cat /home/vagrant/vagrant-dev-validator.pem" > vagrant-dev-validator.pem`
 
 ## How to confirm the chef server is installed
 

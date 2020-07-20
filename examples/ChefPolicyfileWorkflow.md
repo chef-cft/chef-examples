@@ -41,7 +41,7 @@ role `json` file.
 
 ### Assumptions
 
-* You have an understanding of Policyfiles, if you haven't alread, head over
+* You have an understanding of Policyfiles, if you haven't already, head over
 to learn.chef.io, and sign up for the "Manage Your Fleet with Chef Infra" course
 . Under the "Expand your Chef Infra language skills" section, complete the 
 "Learn more about Policyfiles", followed by "Managing a Node With Policyfiles".

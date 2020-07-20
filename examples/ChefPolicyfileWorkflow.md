@@ -14,7 +14,7 @@ world).
 * [Goals](#goals)
 * [Before You Start: Assumptions](#assumptions)
 * [Before You Start: Tested Versions](#tested-versions)
-* [Step 1: Define Policies](#step-1&colon;-define-policies)
+* [Step 1: Define Policies](#step-1-define-policies)
 * [Step 2: Define Policy Groups](#step-2&colon;-define-policy-groups)
 * [Step 3: Create a Base Policy](#step-3&colon;-create-a-base-policy)
 * [Step 4: Create a Deployable Policy](#step-4&colon;-create-a-deployable-policy)

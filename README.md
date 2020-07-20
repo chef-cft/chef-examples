@@ -18,7 +18,6 @@ Note: USE AT YOUR OWN RISK!
 - [Role Cookbook Model Explained](./examples/RoleCookbookModel.md)
 - [HowTo bootstrap an Azure VM using an ARM template & Policyfiles](./examples/AzureArmChefClientBootstrap/README.md)
 - [The Comprehensive Policyfile Workflow Guide](./examples/ChefPolicyfileWorkflow.md)
-- [The Comprehensive Policyfile Automation Guide](./examples/ChefPolicyFileAutomation.md)
 
 ## InSpec
 

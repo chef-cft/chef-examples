@@ -15,15 +15,16 @@ world).
 * [Before You Start: Assumptions](#assumptions)
 * [Before You Start: Tested Versions](#tested-versions)
 * [Step 1: Define Policies](#step-1-define-policies)
-* [Step 2: Define Policy Groups](#step-2&colon;-define-policy-groups)
-* [Step 3: Create a Base Policy](#step-3&colon;-create-a-base-policy)
-* [Step 4: Create a Deployable Policy](#step-4&colon;-create-a-deployable-policy)
-* [Step 5: Bootstrap Nodes](#step-5&colon;-bootstrap-nodes)
-* [Step 6: Make Changes to a Deployable Policy](#step-6&colon;-make-changes-to-a-deployable-policy)
-* [Step 7: Make an Upstream (Base Policy) Change and then Update and Push Downstream (Deployable Policies)](#step-7&colon;-make-an-upstream-(base-policy)-change-and-then-update-and-push-downstream-(deployable-policies))
+* [Step 2: Define Policy Groups](#step-2-define-policy-groups)
+* [Step 3: Create a Base Policy](#step-3-create-a-base-policy)
+* [Step 4: Create a Deployable Policy](#step-4-create-a-deployable-policy)
+* [Step 5: Bootstrap Nodes](#step-5-bootstrap-nodes)
+* [Step 6: Make Changes to a Deployable Policy](#step-6-make-changes-to-a-deployable-policy)
+* [Step 7: Make an Upstream (Base Policy) Change and then Update and Push Downstream (Deployable Policies)](#step-7-make-an-upstream-(base-policy)-change-and-then-update-and-push-downstream-(deployable-policies))
 * [Links](#links)
 * [Appendix: Attributes](#attributes)
-* [Appendix: Policy "Pushing"](#policy-"pushing")
+* [Appendix: Policy "Pushing"](#policy-pushing)
+* [FAQ's](#faqs)
 
 ## GOALS
 
@@ -460,7 +461,7 @@ rinse and repeat all of the following for each Policy Group if needed.
 you'll see in Automate, notice I applied a filter of `ymir*` for the 
 `policy_name` attribute, ignore the bad apple in there, I made a mistake and 
 didn't have time to wait to clean it out.
-    ![Ymir node list](../images/ChefPolicyfileWorkflow/5-2a.png)
+    <img src="../images/ChefPolicyfileWorkflow/5-2a.png" width="800">
 1. In the compliance tab, you should also be able to filter by `name: ymir*` and
 `environment: dev-sandbox` to see the same nodes.
 
@@ -756,7 +757,7 @@ the push process.
 and finally `prod`. This is a _brand new_ policy and it's first time being 
 deployed, it's name is `test-policy`:
 
-* First, let's do a `chef show-policy test-policy` and look at the output:
+1. First, let's do a `chef show-policy test-policy` and look at the output:
     ```
     chef show-policy test-policy
     test-policy
@@ -765,16 +766,16 @@ deployed, it's name is `test-policy`:
     No policies named 'test-policy' are associated with a policy group
     ```
     Nothing there, makes sense, so far so good.
-* Now let's push to our first policy group (the assumption is we've built a 
-  policy locally and tested, and are just following the process outline in this
-  document to push).
+1.  Now let's push to our first policy group (the assumption is we've built a 
+    policy locally and tested, and are just following the process outline in this
+    document to push).
     ```
     chef push-archive unstable output/test-policy-818a653aea9d6eed8073d17305ad3f4b33edb5b1ed7cd53415863c2b38a72309.tgz
     Uploading policy test-policy (818a653aea) to policy group unstable
     Using    test-policy 0.1.0 (24c3c452)
     ```
-* OK, now the Policy exists in the first Policy Group, what happens when I do a
-  `chef show-policy` now?
+1.  Now the Policy exists in the first Policy Group, what happens when I do a
+   `chef show-policy`?
     ```
     chef show-policy test-policy
     test-policy
@@ -787,9 +788,9 @@ deployed, it's name is `test-policy`:
     Notice the `NOT APPLIED`'s that show up? That's because I have other Policy
     Groups already defined for other policies, but this policy is not referenced
     by either of them.
-* Great, the policy is now tagged with `unstable`, which is my first policy
-  group that I deploy to. I repeat the `chef push-archive` command, but change
-  `unstable` to `dev`, and this is what shows up when I do `chef show-policy`:
+1.  The policy is now tagged with `unstable`, which is my first policy group 
+    that I deploy to. I repeat the `chef push-archive` command, but change
+    `unstable` to `dev`, and this is what shows up when I do `chef show-policy`:
     ```
     chef show-policy test-policy
     test-policy
@@ -801,7 +802,7 @@ deployed, it's name is `test-policy`:
     * dev-sandbox:    *NOT APPLIED*
     ```
     Now I have `dev` as a policy group, with the same policy ID as `unstable`.
-* I continue the process with the remaining policy groups, the results are:
+1.  I continue the process with the remaining policy groups, the results are:
     ```
     chef show-policy test-policy
     test-policy
@@ -818,8 +819,74 @@ deployed, it's name is `test-policy`:
     Now, I have pushed my policy to all policy groups I have defined for it, and
     as you see in the results, the Policy ID `818a653aea` is the same for all of
     them.
-* Here's a visual representation of what just happened:
+1.  Here's a visual representation of what just happened:
     <img src="../images/ChefPolicyfileWorkflow/push-diagram.png" width="800">
+
+**Scenario 2**: You push a policy first to `unstable`, then `dev`, `qa`, `stage`
+and finally `prod`. This is an _updated_ policy that's already been deployed
+, it's name is `test-policy`:
+
+1. A `chef show-policy` shows that we are at the same point we stopped at in 
+   scenario 1.
+    ```
+    chef show-policy test-policy
+    test-policy
+    ===========
+
+    * stable:         *NOT APPLIED*
+    * dev:            818a653aea
+    * unstable:       818a653aea
+    * dev-sandbox:    *NOT APPLIED*
+    * qa:             818a653aea
+    * stage:          818a653aea
+    * prod:           818a653aea
+    ```
+1.  I then update `test-policy` to a new revision and push it to `unstable`:
+    ```
+    chef show-policy test-policy
+    test-policy
+    ===========
+
+    * stable:         *NOT APPLIED*
+    * dev:            818a653aea
+    * unstable:       9ddd7a9482
+    * dev-sandbox:    *NOT APPLIED*
+    * qa:             818a653aea
+    * stage:          818a653aea
+    * prod:           818a653aea
+    ```
+    Notice that `unstable` now has a new PolicyID, but the rest are unchanged.
+    This is what allows for Policies to be targeted without affecting other
+    nodes that aren't bootstrapped to the specific policy and policy group.
+1.  Again, I push to `dev`, and so on thru to `prod`:
+    ```
+    # dev
+    chef show-policy test-policy
+    test-policy
+    ===========
+
+    * stable:         *NOT APPLIED*
+    * dev:            9ddd7a9482
+    * unstable:       9ddd7a9482
+    * dev-sandbox:    *NOT APPLIED*
+    * qa:             818a653aea
+    * stage:          818a653aea
+    * prod:           818a653aea
+
+    # the rest
+
+    * stable:         *NOT APPLIED*
+    * dev:            9ddd7a9482
+    * unstable:       9ddd7a9482
+    * dev-sandbox:    *NOT APPLIED*
+    * qa:             9ddd7a9482
+    * stage:          9ddd7a9482
+    * prod:           9ddd7a9482
+    ```
+1. Here's a visual representation:
+    <img src="../images/ChefPolicyfileWorkflow/push-archive-2.png" width="800">
+
+## FAQ's
 
 #### Contributors:
 

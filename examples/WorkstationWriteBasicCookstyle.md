@@ -135,6 +135,59 @@ bad example text here
                  ~~~~ selector  
                  ~~~~ expression
 ```
+## Example Rule
+```
+module RuboCop
+  module Cop
+    module Chef
+      module ChefCorrectness
+        # Cookbook:: metadata.rb maintainer_email field should be set to
+        # cs@chef.io
+        #
+        # @example
+        #
+        #   # bad
+        #   maintainer_email 'me@me.com'
+        #
+        #   # good
+        #   maintainer_email 'cs@chef.io'
+        #
+        class ChefMaintainerEmail < Cop
+          MSG = 'Maintainer should be set to "cs@chef.io"'.freeze
+```
+The section above is the general basic form taken. Code comments document what the cop should do, and shows examples of what it flags and does not.
+
+MSG defines the message displayed with the violation. In this case, it will violate and tell the user that the 'Maintainer should be set to "cs@chef.io"' and prevent modifications to that string. 
+```
+          # Start checking nodes for matches.
+          def_node_matcher :chef_maintainer_email?, <<-PATTERN
+            (send nil? :maintainer_email
+              (str $_))
+          PATTERN
+```
+Here we define our matching pattern to check each code "node" for matching. In this case, we're looking for a line that starts with some kind of space and "maintainer_email," followed by a string. This is what will be matched when the rule is run and is expressed in AST. The trailing string is returned into a variable for later use.
+```
+          def on_send(node)
+            chef_maintainer_email?(node) do |email|
+              add_offense(node, location: :expression, message: MSG, severity: :refactor) unless email == 'cs@chef.io'
+            end
+          end
+```
+The actual matching happens here. The node matching block defined in the previous section is checked against all of the code. With the returned matching text, which gets stored in email, and checked to ensure cs@chef.io is matched, and if not, add an offense.
+```
+          def autocorrect(node)
+            lambda do |corrector|
+              new_val = 'maintainer_email \'cs@chef.io\''
+              corrector.replace(node.loc.expression, new_val)
+            end
+          end
+        end
+      end
+    end
+  end
+end
+```
+The last method handles the autocorrection portion of the Cookstyle rules, and replaces the node with the defined value. 
 ## FAQs
 1. How do I return the matched text, or a portion of it, for testing specific values?<br />
 $ combined with a matcher will return that match. This will allow partial matches on a value. ‘…’ will return an array, while ‘_’ will return a string.

@@ -25,7 +25,7 @@ These instructions will allow a highly-available on-premise depot installation l
 `curl -Lo hab.tar.gz https://api.bintray.com/content/habitat/stable/linux/x86_64/hab-%24latest-x86_64-linux.tar.gz`
 3. From the zip archive, install the hab binary somewhere in $PATH and ensure it has execute permissions:<br />
 `sudo chmod 755 /usr/bin/hab`<br />
-`sudo hab # read the license and accept if in agreement, as the root user`<br />
+`sudo hab license accept # accepts the license`<br />
 4. Import the public package signing keys from the downloaded Builder package bundle:<br />
 `export UNZIP_DIR=/some/base/unzip/directory`<br />
 `for file in $(ls ${UNZIP_DIR}/builder_packages/keys/*pub); do cat $file | sudo hab origin key import;done`

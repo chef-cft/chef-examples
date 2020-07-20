@@ -38,8 +38,8 @@ These steps will grant blanket access to the Applications view in Automate 2 for
 ```
 2. POST the policy. I used an admin token, but any token that can manage IAM policies should work:
 ```
-export TOKEN=`chef-automate iam token create admoon --admin`
+export TOKEN=`chef-automate iam token create ADMIN_TOKEN_NAME --admin`
 curl -X POST https://localhost/apis/iam/v2/policies --data-binary @./policy -k -H "api-token: $TOKEN"  -v
 ```
-3. Double check in the interface to ensure that all members been added. In the GUI: Settings -> Policies -> {Name of your policy, my example is “applications-viewer-access} -> Members
+3. Double check in the interface to ensure that all members exist in policy. In the GUI: Settings -> Policies -> {Name of your policy, my example is “applications-viewer-access} -> Members
 4. If you need to edit membership, this can be done through the UI or set using the 'members' JSON Object.

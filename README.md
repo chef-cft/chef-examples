@@ -34,6 +34,7 @@ Note: USE AT YOUR OWN RISK!
 - [Writing Basic Cookstyle Rules](./examples/WorkstationWriteBasicCookstyle.md)
 - [Example Pipelines](./examples/pipelines/PipelineOverview.md)
 - [Test Kitchen](./examples/test-kitchen/README.md)
+- [Technical Reviews](./technical-reviews/README.md)
 
 ### Contributing
 

@@ -8,11 +8,22 @@ opinionated standard for:
 * Creating and publishing role-level policies.
 * Making changes at base-policy level and pushing those changes out (rebuild the
 world).
-* Creating a policy template for future use.
-* Automating the whole thing, including:
-  * Jobs with PR-based CI/CD.
-  * Jobs to auto-update based on upstream policy changes (rebuild the world).
-  * Auto-repo/policy template generation using a Job and a "template repo".
+
+## Contents
+
+* [Goals](#goals)
+* [Before You Start: Assumptions](#assumptions)
+* [Before You Start: Tested Versions](#tested-versions)
+* [Step 1: Define Policies](#step-1:-define-policies)
+* [Step 2: Define Policy Groups](#step-2:-define-policy-groups)
+* [Step 3: Create a Base Policy](#step-3:-create-a-base-policy)
+* [Step 4: Create a Deployable Policy](#step-4:-create-a-deployable-policy)
+* [Step 5: Bootstrap Nodes](#step-5:-bootstrap-nodes)
+* [Step 6: Make Changes to a Deployable Policy](#step-6:-make-changes-to-a-deployable-policy)
+* [Step 7: Make an Upstream (Base Policy) Change and then Update and Push Downstream (Deployable Policies)](#step-7:-make-an-upstream-(base-policy)-change-and-then-update-and-push-downstream-(deployable-policies))
+* [Links](#links)
+* [Appendix: Attributes](#attributes)
+* [Appendix: Policy "Pushing"](#policy-"pushing")
 
 ## GOALS
 
@@ -21,7 +32,8 @@ world).
 as they want, without the risk of inadvertantly affecting others.
 * Reduce the blast radius of a traditional Chef Infra deployment.
 * Get rid of Environments and Roles.
-* Define attributes that live with the policy.
+* Define attributes that live with the policy instead of an environment or
+role `json` file.
 * Help your teammates fall in love with configuration management :).
 
 ## Before You Start
@@ -60,9 +72,11 @@ I'll be using some diagrams to illustrate the process.
 well and feel like you can work with the easiest, here's an example of an API
 app and it's supporting infrastructure, this imaginary app is called Ymir - and
 it serves API requests about Norse mythology:
-![Role Cookbook Update Process](../images/ChefPolicyfileWorkflow/1-1a.png)
+
+    <img src="../images/ChefPolicyfileWorkflow/1-1a.png" width="600">
 1. Find and circle the "Widest areas of uniqueness":
-![Role Cookbook Update Process](../images/ChefPolicyfileWorkflow/1-1b.png)
+    
+    <img src="../images/ChefPolicyfileWorkflow/1-1b.png" width="600">
 1. Notice in the image above, I've circled 4 unique groups of nodes. These will 
 be our Policies. Let's go ahead and define them as follows:
    1. `ymir-lb`
@@ -243,16 +257,16 @@ don't worry about version pinning, we'll do that in the Policyfile:
     ```
     compliance.rb
     ```
-    and a default attributes file in
+    and a default attributes file in the root of the dir 
     ```
-    attributes/default.rb
+    attributes.rb
     ```
-    Leave the `default.rb` alone for now.
+    Leave the `attributes.rb` alone for now.
 1. You can copy the contents of those files from this repo and change the
 variables to fit your environment. I also suggest at least using Encrypted 
 Data Bags to store your various tokens for Hab and Automate ([more on that 
 here](./ChefTestKitchenEncryptedDataBags.md).)
-1. Update your `default.rb` and add the following:
+1. Update your `default.rb` recipe and add the following:
     ```
     include_recipe 'base-linux::attributes'
     include_recipe 'base-linux::compliance'
@@ -300,7 +314,6 @@ setup in DNS, plus some other ssh stuff that sometimes gets in the way:
           provision_command:
             - sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
             - systemctl enable sshd.service
-            - echo "10.22.11.22 automate automate.dbright.io" >> /etc/hosts
 
     suites:
       - name: default
@@ -380,9 +393,9 @@ this new policy, and build and test it. Add the following line to your
     ```
     lb.rb
     ```
-    and a default attributes file in
+    and a default attributes file in root
     ```
-    attributes/default.rb
+    attributes.rb
     ```
     _Note: `include_policy` merges a policy into the policy **inside** the 
     current policy. There are a few important things to understand in regards to
@@ -400,12 +413,6 @@ this new policy, and build and test it. Add the following line to your
           "recipe[ymir-lb::default]"
         ],
         ```
-    * **Attributes are merged**, and precedence is decided by lexical ordering 
-    of cookbooks. This means that if an attribute is defined in two default
-    attributes files, the last one loaded will take precedence. If you are 
-    including many policies, you may want to make sure the top-level policy has
-    attributes defined with `override` in order to be 100% sure the values you
-    want are used.
 1. In our `recipes/default.rb` let's go ahead and add 
 `include_recipe 'ymir-lb::lb'`, and in our `lb.rb` recipe, simply add this:
     ```
@@ -425,8 +432,8 @@ Server using:
     ```
     chef push-archive dev-sandbox ./output/base-linux-<64 char hash>.tgz
     ```
-1. Repeat 1-8 for all Policies that need to be created, remember you can borrow
-the code here.
+1. Repeat 1-8 for all Policies that need to be created, here is the example code
+you can use: [Example Links](#links)
 
 ## Step 5: Bootstrap Nodes
 This can be done any number of ways, it all really depends on what your process
@@ -461,13 +468,18 @@ didn't have time to wait to clean it out.
 In this step, we're just going to make a simple change to a deployable policy
 to show how the policy is modified and pushed out.
 
-1. In the `ymir-lb`, edit the `attributes\default.rb` and add the following 
-line:
+1. In the `ymir-lb` cookbook, edit the `attributes.rb` and add the 
+following lines:
     ```
-    override['effortless']['audit']['user_toml']['interval'] = 900
+    default['local']['hab']['sup']['event_stream_application'] = 'ymir-lb-local'
+    default['local']['effortless']['audit']['user_toml']['interval'] = 900
     ```
     This will change the interval for which a compliance scan is run on this 
-    node is made from 30 minutes to 15 minutes.
+    node is made from 30 minutes to 15 minutes. It will also set the Application
+    Name in the Automate Application tab to `ymir-lb-local`, `local` is the
+    default Policy Group for Test Kitchen. This uses the recommended "hoisting"
+    method for defining attributes in a Policyfile, 
+    [Read more on attributes here](#appendix:-attributes).
 1. Remove the existing `Policyfile.lock.json`.
 1. Next, run local `kitchen test` to make sure the changes are made properly.
 1. The `kitchen test` you just ran created a new `Policyfile.lock.json`, we can 
@@ -542,7 +554,7 @@ repeat the following:
     kitchen destroy
     ```
 
-The concludes the _manual_ way of doing things, in the next how-to, lets' tie 
+The concludes the _manual_ way of doing things, in the next how-to, let's tie 
 it all together with automation!
 
 * [Guide to PolicyFile Automation](./ChefPolicyFileAutomation.md)
@@ -550,16 +562,264 @@ it all together with automation!
 
 ## Links
 * **ymir policies:**
-  * [ymir-lb]()
-  * [ymir-api]()
-  * [ymir-cache]()
-  * [ymir-backend]()
+  * [ymir-lb](https://github.com/danielcbright/ymir-lb-policy)
+  * [ymir-api](https://github.com/danielcbright/ymir-api-policy)
+  * [ymir-cache](https://github.com/danielcbright/ymir-cache-policy)
+  * [ymir-backend](https://github.com/danielcbright/ymir-backend-policy)
 * **pipeline files:**
-  * [Jenkins: Create Policy Job]()
-  * [Jenkins: Create Policy Template]()
-  * [Jenkins: Policy CI]()
-  * [Jenkins: Policy CD]()
+  * [Jenkins: Create Policy Job](https://github.com/danielcbright/policyfile-create-PFP)
+  * [Jenkins: Create Policy Template](https://github.com/danielcbright/policyfile-template-PFP)
+  * [Jenkins: Policy CI](https://github.com/danielcbright/jenkins-policyfile-lib-PFP)
+  * [Jenkins: Policy CD](https://github.com/danielcbright/policyfile-publish-PFP)
 
+# Appendix
+
+## Attributes
+There are a lot of ways to use attributes with Policyfiles, Michael Hedgpeth has
+written a great blog post about it [here](http://hedge-ops.com/policyfile-attributes/).
+But in the spirit of keeping things simple, and building upon simplicity, we're
+going to cover the two main methods for defining attributes with Policyfiles.
+
+### Method 1: Attribute "Hoisting"
+This is the method that is recommended by Chef and is used throughout the 
+Policyfile Workflow and Automation Guides.
+
+#### Process
+* Create a `Policyfile.rb`, no Policyfile Cookbook is even necessary.
+* Include policies, set runlists, define cookbook sources etc.. just as with the
+workflow described in this document. The only thing is there will be no:
+    ```
+    cookbook 'your-policy-name', path: '.'
+    ```
+    This means that all cookbooks are coming from outside sources.
+* From *inside* the `Policyfile.rb`, you will define any and all attributes that
+are specific to the policy, using the example in Method 1, this is how it would
+look inside a `Policyfile.rb` (why someone would change the MongoDB port, I have
+no idea, but it's just an example :)):
+    ```
+    default['local']['mongodb']['config']['mongod']['net']['port'] = 27017
+    default['dev']['mongodb']['config']['mongod']['net']['port']   = 27018
+    default['qa']['mongodb']['config']['mongod']['net']['port']    = 27019
+    default['prod']['mongodb']['config']['mongod']['net']['port']  = 27020
+    ```
+    In the cookbook, I would reference the above attribute as:
+    ```
+    node['mongodb']['config']['mongod']['net']['port']
+    ```
+
+#### Pros
+* Super simple and elegant
+* No extra cookbook required, the attributes are set at the Policy level
+* They are verifiable, you can actually see the attributes set in the 
+`Policyfile.lock.json` and verify they will be applied properly to the right
+node, here's an example of what the json file looks like with the above
+attributes defined:
+    ```json
+    "default_attributes": {
+    "local": {
+        "mongodb": {
+            "config": {
+            "mongod": {
+                "net": {
+                "port": 27017
+                }
+              }
+            }
+          }
+        },
+        "dev": {
+        "mongodb": {
+            "config": {
+            "mongod": {
+                "net": {
+                "port": 27018
+                }
+              }
+            }
+          }
+        },
+        "qa": {
+        "mongodb": {
+            "config": {
+            "mongod": {
+                "net": {
+                "port": 27019
+                }
+              }
+            }
+          }
+        },
+        "prod": {
+        "mongodb": {
+            "config": {
+            "mongod": {
+                "net": {
+                "port": 27020
+                }
+              }
+            }
+          }
+        }
+      },
+    ```
+#### Cons/Gotchas
+* Your `Policyfile.rb` could end up becoming a very large file depending on how
+many attributes you need to define. And there's no way to split it up based on
+this method.
+* Your `Policyfile.lock.json` will end up with all attributes that are defined 
+locally, this includes secrets, be sure to use Encrypted Data Bags or other
+means to inject secrets rather than relying upon setting and storing them as
+attributes.
+
+### Method 2: Attribute Cookbook
+In this method, you create a cookbook that has a 1:1 relationship with the 
+Policyfile you've created. The logic is as follows:
+
+#### Process
+* Create a Policyfile Cookbook and use the generated cookbook to store 
+attributes. This is the cookbook that's defined like so in the `Policyfile.rb`.
+    ```
+    cookbook 'your-policy-name', path: '.'
+    ```
+* Define your attributes in the `attributes/default.rb` just like you would any
+ordinary cookbook.
+* Use `case` statements to define attributes based on Policy Groups, like so
+  note that `local` is the default Policy Group used by Test Kitchen:
+    ```
+    case policy_group
+        when 'local'
+            default['mongodb']['config']['mongod']['net']['port'] = 27017
+        when 'dev'
+            default['mongodb']['config']['mongod']['net']['port'] = 27018
+        when 'qa'
+            default['mongodb']['config']['mongod']['net']['port'] = 27019
+        when 'prod'
+            default['mongodb']['config']['mongod']['net']['port'] = 27020
+    end
+    ```
+    In the cookbook, I would reference the above attribute as:
+    ```
+    node['mongodb']['config']['mongod']['net']['port']
+    ```
+* Define your recipe logic in the Policyfile Cookbook and use it as the only
+cookbook in your runlist. This ensures it is used as a "wrapper cookbook" and
+that all attributes you have defined will take precedence
+
+#### Pros
+* You can keep your attributes defined in a separate file from your Policyfile,
+which can lead to cleaner code.
+* You can have external attribute sources that you pull in to multiple Policies
+at build time (removes the need for repeating everything).
+
+#### Cons/Gotchas
+* A few more steps involved than using Method 2.
+* If your policy has an `include_policy`, and the included policy has a default
+attribute defined that you want to override, you must use `override` when 
+defining your attribute. For example, my base policy might have an attribute
+cookbook that defins this:
+    ```
+    case policy_group
+        when 'local'
+            default['effortless']['audit']['user_toml']['interval'] = 1800
+    end
+    ```
+    If I want to set the value to `900` in my downstream policy, I need to add
+    this to my attributes:
+    ```
+    case policy_group
+        when 'local'
+            override['effortless']['audit']['user_toml']['interval'] = 900
+    end
+    ```
+    This may not be obvious at first because if you don't set `override`, 
+    there's a possibility that what you set as default will take precedence.
+    However, there are scenarios where that's not the case, so it's best to be
+    100% sure and set them with `override`. For all other attributes that are
+    not defined in an "included policy", you can set them just like any other
+    by using `default`.
+* When updating your `Policyfile.lock.json`, a simple `chef update` will not
+pull in the attribute changes unless the cookbook version has been increased. 
+It's always good to delete the lock file first and then do a `chef install` to 
+recreate it with the changes.
+
+## Policy "Pushing"
+What happens when you "push" a policy to the Chef Infra Server? Consider the
+following: 
+
+* You have a Policy that exists in 4 Policy Groups on the Chef Infra Server
+* The Policy Groups consist of `dev, qa, stage, prod`
+
+Let's take a look at the following scenarios and diagrams to help shed light on
+the push process.
+
+**Scenario 1**: You push a policy first to `unstable`, then `dev`, `qa`, `stage`
+and finally `prod`. This is a _brand new_ policy and it's first time being 
+deployed, it's name is `test-policy`:
+
+* First, let's do a `chef show-policy test-policy` and look at the output:
+    ```
+    chef show-policy test-policy
+    test-policy
+    ===========
+
+    No policies named 'test-policy' are associated with a policy group
+    ```
+    Nothing there, makes sense, so far so good.
+* Now let's push to our first policy group (the assumption is we've built a 
+  policy locally and tested, and are just following the process outline in this
+  document to push).
+    ```
+    chef push-archive unstable output/test-policy-818a653aea9d6eed8073d17305ad3f4b33edb5b1ed7cd53415863c2b38a72309.tgz
+    Uploading policy test-policy (818a653aea) to policy group unstable
+    Using    test-policy 0.1.0 (24c3c452)
+    ```
+* OK, now the Policy exists in the first Policy Group, what happens when I do a
+  `chef show-policy` now?
+    ```
+    chef show-policy test-policy
+    test-policy
+    ===========
+
+    * stable:         *NOT APPLIED*
+    * unstable:       818a653aea
+    * dev-sandbox:    *NOT APPLIED*
+    ```
+    Notice the `NOT APPLIED`'s that show up? That's because I have other Policy
+    Groups already defined for other policies, but this policy is not referenced
+    by either of them.
+* Great, the policy is now tagged with `unstable`, which is my first policy
+  group that I deploy to. I repeat the `chef push-archive` command, but change
+  `unstable` to `dev`, and this is what shows up when I do `chef show-policy`:
+    ```
+    chef show-policy test-policy
+    test-policy
+    ===========
+
+    * stable:         *NOT APPLIED*
+    * dev:            818a653aea
+    * unstable:       818a653aea
+    * dev-sandbox:    *NOT APPLIED*
+    ```
+    Now I have `dev` as a policy group, with the same policy ID as `unstable`.
+* I continue the process with the remaining policy groups, the results are:
+    ```
+    chef show-policy test-policy
+    test-policy
+    ===========
+
+    * stable:         *NOT APPLIED*
+    * dev:            818a653aea
+    * unstable:       818a653aea
+    * dev-sandbox:    *NOT APPLIED*
+    * qa:             818a653aea
+    * stage:          818a653aea
+    * prod:           818a653aea
+    ```
+    Now, I have pushed my policy to all policy groups I have defined for it, and
+    as you see in the results, the Policy ID `818a653aea` is the same for all of
+    them.
+* Here's a visual representation of what just happened:
+    <img src="../images/ChefPolicyfileWorkflow/push-diagram.png" width="800">
 
 #### Contributors:
 

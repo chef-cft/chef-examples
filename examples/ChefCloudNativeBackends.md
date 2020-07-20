@@ -1,36 +1,41 @@
-## This content has been moved to [Chef Cloud Native Backends](../ChefCloudNativeBackends.md)
-
-# HowTo - Install Chef Automate & Chef Infra Server with AWS RDS Postgres and AWS Elasticsearch Backends
+# Guide - Setup Chef Infra + Automate on Cloud Native Backends (Azure, AWS and GCP)
 
 ## Is this supported by Chef Software, Inc?
-* The Chef software installed (Automate, Chef Infra Server) are fully supported by Chef. 
+* The Chef software installed (Automate, Chef Infra Server) are fully supported 
+by Chef. 
 * For everything else, there are no support SLAs. including:
     * The setup and any errors you may have provisioning services
-    * Any Cloud services provisioned (e.g. PostgreSQL, ElasticSearch) - please direct questions to your Cloud Provider Customer Support
+    * Any Cloud services provisioned (e.g. PostgreSQL, ElasticSearch) - please 
+    direct questions to your Cloud Provider Customer Support
 
-This guide will show you how to setup your Chef Automate server using external Postgres and
-Elasticsearch. Allowing you to offload the database operations of Chef Automate to AWS instead 
-of managing them in-house.
+This guide will show you how to setup your Chef Automate server using external 
+Postgres and Elasticsearch. Allowing you to offload the database operations of 
+Chef Automate to AWS instead of managing them in-house.
 
 ### Current Limitations
-* Does not support Supermarket currently, to use Supermarket you'll have to setup a separate Chef Infra Server to act as the oauth provider.
+* Does not support Supermarket currently, to use Supermarket you'll have to 
+setup a separate Chef Infra Server to act as the oauth provider.
 * Does not support push-jobs
 * No custom `chef-server.rb` can be defined
-* This deployment method for Chef Infra is assuming you will be using a pipeline to deliver changes to your Chef Infra Server for all objects (cookbooks, data bags, etc...) and will not be creating users other than the one(s) needed for pipelining the process.
-* Chef-Manage is not supported with this deployment model, as it is currently deprecated, and some of it's features are being migrated to Automate: https://docs.chef.io/versions/#deprecated-products-and-versions 
+* This deployment method for Chef Infra is assuming you will be using a pipeline
+to deliver changes to your Chef Infra Server for all objects (cookbooks, data
+bags, etc...) and will not be uploading or modifying content using `knife`.
+* Chef-Manage is not supported with this deployment model, as it is currently
+deprecated, and some of it's features are being migrated to Automate:
+https://docs.chef.io/versions/#deprecated-products-and-versions 
 
 ## Arch Diagram:
 
-![arch diagram](./images/Cloud-backends.png)
+![arch diagram](../images/CloudNativeBackends/AutomateandInfraDiagram.png)
 
 ## Before You Start
 
 ### Assumptions
 
-* You have AWS account access and can create resources including:
-  * EC2 instances
-  * RDS Postgres/Aurora PostgreSQL Clusters
-  * Elasticsearch Service Domains
+* You have Cloud account access and can create resources including:
+  * Instances
+  * Postgres Services
+  * Elasticsearch Services
   * Any security groups and vpc subnets that are required as part of the setup
 * This guide uses the Centos 7 HVM image.
 * You have priced out the RDS and ES costs beforehand, please note that even the    smallest dev/ES cluster will cost around $120/mo.
@@ -295,3 +300,12 @@ AWS signs their own certs now with their own CA, we need to download those and m
 ## FAQs
 
 1. [This section should be updated regularly as people ask about certain behaviors and you answer questions related to this example.]
+
+
+
+
+sysctl on all subsequent nodes
+change path for config.toml
+
+curl -XGET 'elasticsearch-domain-endpoint/_snapshot?pretty'
+curl -XGET 'elasticsearch-domain-endpoint/_snapshot/repository/_all?pretty'

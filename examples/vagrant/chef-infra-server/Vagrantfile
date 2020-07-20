@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+### configuration parameters ###
+BOX = 'generic/ubuntu1604'
+OS_TYPE = BOX.split('/')[-1] # i.e. rhel, centos, ubuntu
+OS_VERSION = OS_TYPE.gsub(/[^0-9]/, '') # i.e. 6 or 18.04 or 9
+BOX_NAME = "#{OS_TYPE}-chefserver"
+BOX_RAM_MB = '4096'
+BOX_CPU_COUNT = '2'
+BOX_IP = '10.11.12.13'
+CHEF_SERVER_VERSION = '12.17.15'
+### /configuration parameters ###
+if OS_TYPE =~ /Ubuntu\w+/i
+  OS_VERSION = OS_VERSION.insert(2, '.')
+end
+
+Vagrant.configure('2') do |config|
+  config.vm.box = BOX
+  config.vm.network 'private_network', ip: BOX_IP
+
+  config.vm.provider 'virtualbox' do |vb|
+    vb.memory = BOX_RAM_MB
+    vb.cpus = BOX_CPU_COUNT
+    vb.name = BOX_NAME
+  end
+
+  config.vm.provision 'shell', path: 'provision.sh',
+    args: [CHEF_SERVER_VERSION, OS_TYPE, OS_VERSION]
+end

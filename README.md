@@ -30,6 +30,7 @@ Note: USE AT YOUR OWN RISK!
 
 - [Example Pipelines](./examples/pipelines/PipelineOverview.md)
 - [Test Kitchen](./examples/test-kitchen/README.md)
+- [Vagrant](./examples/vagrant/chef-infra-server/README.md)
 
 ### Contributing
 

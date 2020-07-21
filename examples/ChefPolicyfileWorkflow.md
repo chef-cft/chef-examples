@@ -42,8 +42,7 @@ role `json` file.
 ### Assumptions
 
 * You have an understanding of Policyfiles, if you haven't already, head over
-to learn.chef.io, and sign up for the "Manage Your Fleet with Chef Infra" course
-. Under the "Expand your Chef Infra language skills" section, complete the 
+to [learn.chef.io](https://learn.chef.io), and sign up for the [Manage Your Fleet with Chef Infra](https://learn.chef.io/courses/course-v1:chef+Infra101+perpetual/about) course. Under the "Expand your Chef Infra language skills" section, complete the 
 "Learn more about Policyfiles", followed by "Managing a Node With Policyfiles".
 * You are using SCM that has the ability to fire webhooks, and a Job server that
 has the ability to trigger based on them. I use Jenkins because I'm jumping 

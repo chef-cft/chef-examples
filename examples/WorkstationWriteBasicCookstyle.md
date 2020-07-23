@@ -1,6 +1,6 @@
-# How-to - Write a basic Cookstyle Rule
+# How-to - Write a basic Cookstyle Cop
 
-This guide will provide a basic introduction to writing and installing custom Cookstyle rules.
+This guide will provide a basic introduction to writing and installing custom Cookstyle Cops.
 
 ## Before You Start
 
@@ -8,7 +8,6 @@ This guide will provide a basic introduction to writing and installing custom Co
 
 * Chef Workstation with Cookstyle installed
 * Familiarity with Ruby
-* Install ruby-parse utility: `gem install parser`
 
 ### Tested Versions
 
@@ -16,7 +15,7 @@ This guide will provide a basic introduction to writing and installing custom Co
 * Cookstyle
 * Chef Infra
 
-## The Basics of Creating a Cookstyle test.
+## The Basics of Creating a Cookstyle Cop.
 
 ### The Basic Format
 ```
@@ -61,6 +60,7 @@ end
 ```
 
 ### Node Matcher and AST
+
 Abstract Syntax Tree (AST) allows you to crawl trees of text, and the Rubocop documentation gives a good overview. It’s a good idea to read the following document from them, as it will give you a decent look at Cookstyle:
 https://rubocop.readthedocs.io/en/latest/development/
 

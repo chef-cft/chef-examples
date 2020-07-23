@@ -82,8 +82,8 @@ nodes.each do |node|
 end
 puts "-------------------------------------------------------------"
 
-one.each {|n| puts "One hour: #{n['name']}" }
-two.each {|n| puts "Two hours: #{n['name']}" }
-alert.each {|n| puts "Alert: #{n['name']}" }
-amber.each {|n| puts "Amber: #{n['name']}" }
-red.each {|n| puts "Red: #{n['name']}" }
+one.each {|n| puts "1 hour: #{n['name']}" }
+two.each {|n| puts "2 hours: #{n['name']}" }
+alert.each {|n| puts "1 week: #{n['name']}" }
+amber.each {|n| puts "2 weeks: #{n['name']}" }
+red.each {|n| puts "3 weeks: #{n['name']}" }

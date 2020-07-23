@@ -12,7 +12,7 @@ Note: USE AT YOUR OWN RISK!
 - [Setup Automate with Let's Encrypt SSL Cert](./examples/A2WithLetsEncryptSSLCert.md)
 - [Automate SAML with AzureAD](./examples/A2SamlWithAzureAD.md)
 - [Grant Access to Applications Dashboard](./examples/A2GrantAppDashboardAccess.md)
-- [Ruby checkins report against the Automate API](./examples/a2-api/checkins.rb)
+- [Ruby checkins report against the Automate API](./examples/a2-api/README.md)
 
 ## Infra
 

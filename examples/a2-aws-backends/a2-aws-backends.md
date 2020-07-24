@@ -1,5 +1,3 @@
-## This content has been moved to [Chef Cloud Native Backends](../ChefCloudNativeBackends.md)
-
 # HowTo - Install Chef Automate & Chef Infra Server with AWS RDS Postgres and AWS Elasticsearch Backends
 
 ## Is this supported by Chef Software, Inc?

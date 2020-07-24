@@ -8,7 +8,7 @@ These instructions will allow a highly-available on-premise depot installation l
 * New Instance:
   * 16 Cores
   * 32 GB RAM
-  * /hab partitioned to a 20 GB volume
+  * /hab partitioned to a 100 GB volume
   * /tmp partitioned to a 50 GB volume
   * Communication opened on 443, 80, Postgres RDS port
   * Able to get root access
@@ -22,7 +22,7 @@ These instructions will allow a highly-available on-premise depot installation l
 1. Download the Zip archive of the on-prem-builder repo:<br />
 `curl -LO https://github.com/habitat-sh/on-prem-builder/archive/master.zip`
 2. Download the Chef Habitat cli tool:<br />
-`curl -Lo hab.tar.gz https://api.bintray.com/content/habitat/stable/linux/x86_64/hab-%24latest-x86_64-linux.tar.gz`
+`curl -Lo hab.tar.gz https://packages.chef.io/files/stable/habitat/latest/hab-x86_64-linux.tar.gz`
 3. From the zip archive, install the hab binary somewhere in $PATH and ensure it has execute permissions:<br />
 `sudo chmod 755 /usr/bin/hab`<br />
 `sudo hab license accept # accepts the license`<br />

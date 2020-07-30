@@ -11,6 +11,8 @@ Note: USE AT YOUR OWN RISK!
 - [Set up Automate + Chef Infra Server to use RDS Aurora Postgres + AWS Elastisearch Service Backends](./examples/a2-aws-backends/a2-aws-backends.md)
 - [Setup Automate with Let's Encrypt SSL Cert](./examples/A2WithLetsEncryptSSLCert.md)
 - [Automate SAML with AzureAD](./examples/A2SamlWithAzureAD.md)
+- [Grant Access to Applications Dashboard](./examples/A2GrantAppDashboardAccess.md)
+- [Ruby checkins report against the Automate API](./examples/a2-api/README.md)
 
 ## Infra
 
@@ -26,10 +28,14 @@ Note: USE AT YOUR OWN RISK!
 
 ## Habitat
 
+- [Habitat Builder with S3 and RDS](./examples/HabitatBuilderWithS3RDS.md)
+
 ## Other
 
+- [Writing Basic Cookstyle Rules](./examples/WorkstationWriteBasicCookstyle.md)
 - [Example Pipelines](./examples/pipelines/PipelineOverview.md)
 - [Test Kitchen](./examples/test-kitchen/README.md)
+- [Technical Reviews](./technical-reviews/README.md)
 - [Vagrant](./examples/vagrant/chef-infra-server/README.md)
 
 ### Contributing

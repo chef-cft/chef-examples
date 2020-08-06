@@ -1,4 +1,4 @@
-# How-to - Write a basic Cookstyle Cop
+# How-to - Write a Basic Cookstyle Cop
 
 This guide will provide a basic introduction to writing and installing custom Cookstyle Cops.
 
@@ -35,17 +35,17 @@ module RuboCop
        #
        class ${Cop Name} < Cop
          MSG = 'This will be displayed on violation'.freeze
- 
+
          def_node_matcher :search_method?, <<-PATTERN
            ${AST Pattern Here}
          PATTERN
- 
+
          def on_send(node)
            search_method?(node) do |check|
              add_offense(node, location: :expression, message: MSG, severity: :refactor) unless check condition
            end
          end
- 
+
          def autocorrect(node)
            lambda do |corrector|
              new_val = 'new value'
@@ -102,37 +102,37 @@ ruby-parse -e "bad example text here"
 However, if we want to look at a step through of each selector in that example to understand the selection better, we will want to use -LE:
 ```
 $ ruby-parse -LEe "bad example text here"
-bad example text here   
-^~~ tIDENTIFIER "bad"                           expr_cmdarg  [0 <= cond] [0 <= cmdarg] 
-bad example text here   
-    ^~~~~~~ tIDENTIFIER "example"               expr_arg     [0 <= cond] [0 <= cmdarg] 
-bad example text here   
-            ^~~~ tIDENTIFIER "text"             expr_arg     [0 <= cond] [1 <= cmdarg] 
-bad example text here   
-                 ^~~~ tIDENTIFIER "here"        expr_arg     [0 <= cond] [11 <= cmdarg] 
-bad example text here   
-                     ^ false "$eof"             expr_arg     [0 <= cond] [111 <= cmdarg] 
+bad example text here
+^~~ tIDENTIFIER "bad"                           expr_cmdarg  [0 <= cond] [0 <= cmdarg]
+bad example text here
+    ^~~~~~~ tIDENTIFIER "example"               expr_arg     [0 <= cond] [0 <= cmdarg]
+bad example text here
+            ^~~~ tIDENTIFIER "text"             expr_arg     [0 <= cond] [1 <= cmdarg]
+bad example text here
+                 ^~~~ tIDENTIFIER "here"        expr_arg     [0 <= cond] [11 <= cmdarg]
+bad example text here
+                     ^ false "$eof"             expr_arg     [0 <= cond] [111 <= cmdarg]
 s(:send, nil, :bad,
   s(:send, nil, :example,
     s(:send, nil, :text,
       s(:send, nil, :here))))
 bad example text here
-~~~ selector                    
+~~~ selector
 ~~~~~~~~~~~~~~~~~~~~~ expression
 s(:send, nil, :example,
   s(:send, nil, :text,
     s(:send, nil, :here)))
 bad example text here
-    ~~~~~~~ selector            
+    ~~~~~~~ selector
     ~~~~~~~~~~~~~~~~~ expression
 s(:send, nil, :text,
   s(:send, nil, :here))
 bad example text here
-            ~~~~ selector       
+            ~~~~ selector
             ~~~~~~~~~ expression
 s(:send, nil, :here)
 bad example text here
-                 ~~~~ selector  
+                 ~~~~ selector
                  ~~~~ expression
 ```
 ## Example Rule
@@ -157,7 +157,7 @@ module RuboCop
 ```
 The section above is the general basic form taken. Code comments document what the cop should do, and shows examples of what it flags and does not.
 
-MSG defines the message displayed with the violation. In this case, it will violate and tell the user that the 'Maintainer should be set to "cs@chef.io"' and prevent modifications to that string. 
+MSG defines the message displayed with the violation. In this case, it will violate and tell the user that the 'Maintainer should be set to "cs@chef.io"' and prevent modifications to that string.
 ```
           # Start checking nodes for matches.
           def_node_matcher :chef_maintainer_email?, <<-PATTERN
@@ -187,10 +187,25 @@ The actual matching happens here. The node matching block defined in the previou
   end
 end
 ```
-The last method handles the autocorrection portion of the Cookstyle rules, and replaces the node with the defined value. 
+The last method handles the autocorrection portion of the Cookstyle rules, and replaces the node with the defined value.
+
+## Testing Example Rule in Cookbook
+To test example rule, a `.rubocop.yml` needs to be created directly in the cookbook or as a reference, inherited within the cookbook.
+```yaml
+require:
+- ./cop.rb # Location and name of custom cop
+ChefCorrectness/ChefMaintainerEmail:
+ Description: Checks to ensure correct email set as maintainer. # Description of Cop
+ Enabled: true # Enable the Cop
+ VersionAdded: '5.1.0' #Version in which it was added
+ Include: # Any Files to Include
+  - '**/metadata.rb'
+```
+Cookstyle will utilize the rubocop.yml to enable and add the custom cop to check against.
+
 ## FAQs
 1. How do I return the matched text, or a portion of it, for testing specific values?<br />
 $ combined with a matcher will return that match. This will allow partial matches on a value. ‘…’ will return an array, while ‘_’ will return a string.
-2. The matches aren't returning as expected using the generated AST. What's wrong?<br /> 
-Use `:send, nil?` instead of `:send, nil`.<br /> 
+2. The matches aren't returning as expected using the generated AST. What's wrong?<br />
+Use `:send, nil?` instead of `:send, nil`.<br />
 Examples: $... will return an array of matches, $_ will return a string.

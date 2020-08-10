@@ -87,3 +87,13 @@ echo "********************"
 echo "Run the Chef Client "
 echo "********************"
 chef-client -r 'recipe[audit::default]'
+
+echo ""
+echo ""
+echo "***********************"
+echo "Perform an Inspec Scan "
+echo "***********************"
+echo ""
+echo "NOTE: This step will fail because you now need to move onto resolving issues with your node!"
+echo ""
+inspec exec linux-baseline -t ssh://vagrant@localhost:22 --password=vagrant

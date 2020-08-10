@@ -1,0 +1,8 @@
+*.toml
+*.pem
+.vagrant/*
+client/settings.rb
+server/settings.rb
+client/.vagrant/*
+server/.vagrant/*
+config.rb

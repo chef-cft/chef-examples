@@ -17,12 +17,9 @@ echo "******************************************"
 
 if [[ $OS_TYPE == *'ubuntu'* ]]
 then
-  #https://packages.chef.io/files/stable/chef-workstation/20.8.111/ubuntu/16.04/chef-workstation_20.8.111-1_amd64.deb
   wget https://packages.chef.io/files/stable/chef-workstation/$CHEF_WORKSTATION_VERSION/ubuntu/$OS_VERSION/chef-workstation_$CHEF_WORKSTATION_VERSION-1_amd64.deb
   sudo dpkg -i ./chef-workstation_$CHEF_WORKSTATION_VERSION-1_amd64.deb
-  #echo "HERE"
 else
-  #https://packages.chef.io/files/stable/chef-workstation/20.8.111/el/8/chef-workstation-20.8.111-1.el7.x86_64.rpm
   wget https://packages.chef.io/files/stable/chef-workstation/$CHEF_WORKSTATION_VERSION/el/$OS_VERSION/chef-workstation-$CHEF_WORKSTATION_VERSION-1.el$OS_VERSION.x86_64.rpm
   rpm -Uvh ./chef-workstation_$CHEF_WORKSTATION_VERSION.el$OS_VERSION-1.x86_64.rpm
 fi
@@ -79,6 +76,8 @@ knife bootstrap client.bootstrap -U vagrant -P vagrant --chef-license accept --s
 ## chef-client firstboot.json approach
 #sudo chmod +x /home/vagrant/vbox/client/firstboot.sh
 #sudo /bin/bash -xev /home/vagrant/vbox/client/firstboot.sh
+
+## cookbook upload
 knife cookbook upload -ao /home/vagrant/.chef/cookbooks/ -u souschef
 
 echo ""

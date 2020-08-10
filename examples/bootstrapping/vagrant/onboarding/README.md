@@ -2,8 +2,6 @@
 
 `NOTE: This is not a recommended architecture but rather meant to help you get started on your journey with Chef.`
 
-The purpose of this project is to have you become comfortable with leveraging the Chef toolkit to identify and remediate a compliance issue on a node. During this exercise you will provision, configure and use components like Chef Automate, Chef Infra Server, Chef Inspec and Policyfiles. If you find something you think should be changed, updated, added or removed please submit a Pull Request (PR). Enjoy!
-
 ## General Overview 
 
 After working through the `Assumptions` and `Prerequisities` you will need to provision the `server.bootstrap` machine using the accompanying [Vagrantfile](./server/Vagrantfile), then adjust your `/etc/hosts` or HOSTS file on your machine to include a reference to `server.bootstrap` on `10.11.12.13`, then proceed to provision your `client.bootstrap` machine using the 
@@ -120,3 +118,7 @@ Thank to those who helped with ideas or code to get this started. This work was 
 * Adam M Dutko
 * Dina Muscanell
 * Steven Tan
+
+# Contributing
+
+The purpose of this project is to help you become comfortable with leveraging the Chef toolkit to identify and remediate a compliance issue on a node. During this exercise you will provision two vagrant boxes. On the `bootstrap.server` you will provision Chef Automate and Chef Infra Server. On the `bootstrap.client` you will provision Chef Workstation, the box will be bootstrapped and Inspec will be run against the node after bootstrapping to reveal some of the shortcomings of a standard installation of an Operating Systems. If you find something you think should be changed, updated, added or removed please submit a Pull Request (PR). Enjoy!

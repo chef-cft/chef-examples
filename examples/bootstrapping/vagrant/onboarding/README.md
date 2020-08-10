@@ -11,6 +11,11 @@ accompanying [Vagrantfile](./client/Vagrantfile). Note that before you provision
 
 After you've provisioned each machine you will then use the address you added to your `/etc/hosts` or HOSTS file to access Chef Automate through your browser using the credentials found in the `automate-credentials.toml` file in the `SHARED_DIRECTORY` location. This credentials file was generated during the `server` bootstrap process. 
 
+### Testing Status
+
+- The following distributions have been tested:
+  - `generic/ubuntu1804`
+
 ## Before You Start
 
 ### Assumptions

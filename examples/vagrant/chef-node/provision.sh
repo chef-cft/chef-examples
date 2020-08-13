@@ -19,6 +19,7 @@ if [[ $OS_TYPE == *'ubuntu'* ]]
 then
   wget https://packages.chef.io/files/stable/chef-workstation/$CHEF_WORKSTATION_VERSION/ubuntu/$OS_VERSION/chef-workstation_$CHEF_WORKSTATION_VERSION-1_amd64.deb
   sudo dpkg -i ./chef-workstation_$CHEF_WORKSTATION_VERSION-1_amd64.deb
+#   echo "foo"
 else
   wget https://packages.chef.io/files/stable/chef-workstation/$CHEF_WORKSTATION_VERSION/el/$OS_VERSION/chef-workstation-$CHEF_WORKSTATION_VERSION-1.el$OS_VERSION.x86_64.rpm
   rpm -Uvh ./chef-workstation_$CHEF_WORKSTATION_VERSION.el$OS_VERSION-1.x86_64.rpm
@@ -44,9 +45,9 @@ echo "*****************************************"
 echo "Create bootstrap directory and contents. "
 echo "*****************************************"
 mkdir -p /home/vagrant/.chef/{certificates,config,cookbooks,data_bags,environments,roles}
-cp /home/vagrant/vbox/client/config.rb /home/vagrant/.chef/
-cp /home/vagrant/vbox/bootstrap-validator.pem /home/vagrant/.chef/
-cp /home/vagrant/vbox/souschef-user.pem /home/vagrant/.chef/
+cp /home/vagrant/vbox/node/config.rb /home/vagrant/.chef/
+cp /home/vagrant/vbox/server/bootstrap-validator.pem /home/vagrant/.chef/
+cp /home/vagrant/vbox/server/souschef-user.pem /home/vagrant/.chef/
 sudo chown -R vagrant:vagrant /home/vagrant/.chef 
 su -l vagrant -c "knife ssl fetch"
 
@@ -74,8 +75,8 @@ echo "**************************************************"
 knife bootstrap client.bootstrap -U vagrant -P vagrant --chef-license accept --sudo --yes
 
 ## chef-client firstboot.json approach
-#sudo chmod +x /home/vagrant/vbox/client/firstboot.sh
-#sudo /bin/bash -xev /home/vagrant/vbox/client/firstboot.sh
+#sudo chmod +x /home/vagrant/vbox/node/firstboot.sh
+#sudo /bin/bash -xev /home/vagrant/vbox/node/firstboot.sh
 
 ## cookbook upload
 knife cookbook upload -ao /home/vagrant/.chef/cookbooks/ -u souschef

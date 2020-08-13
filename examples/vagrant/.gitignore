@@ -1,0 +1,15 @@
+## Don't need secure components
+chef-server/*.toml
+chef-server/*.pem
+
+## Skip customizations
+chef-node/settings.rb
+chef-node/config.rb
+chef-server/settings.rb
+chef-server/config.rb
+
+## No Vagrant files needed
+chef-node/.vagrant/*
+chef-server/.vagrant/*
+chef-automate/.vagrant/*
+chef-workstation/.vagrant/*

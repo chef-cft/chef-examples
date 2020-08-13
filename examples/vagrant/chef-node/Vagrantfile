@@ -26,8 +26,11 @@ Vagrant.configure('2') do |config|
 
   config.vm.network 'private_network', ip: BOX_IP 
 
-  ### Map a local directory to a "shared" directory in the box
-  config.vm.synced_folder SHARED_DIRECTORY, "/home/vagrant/vbox"
+  ### Map the chef-server directory to the ~/vbox/server directory in the box
+  config.vm.synced_folder SERVER_SHARED_DIRECTORY, "/home/vagrant/vbox/server"
+
+  ### Map the chef-node directory to the ~/vbox/node directory in the box
+  config.vm.synced_folder NODE_SHARED_DIRECTORY, "/home/vagrant/vbox/node"
 
   config.vm.provider 'virtualbox' do |vb|
     vb.memory = BOX_RAM_MB

@@ -26,12 +26,8 @@ Vagrant.configure('2') do |config|
 
   config.vm.network 'private_network', ip: BOX_IP
 
-  ### Open ports to the Chef Automate dashboard
-  #config.vm.network "forwarded_port", guest_ip: BOX_IP, guest: 80, host: 80
-  #config.vm.network "forwarded_port", guest_ip: BOX_IP, guest: 443, host: 443
-
-  ### Map a local directory to a "shared" directory in the box
-  config.vm.synced_folder SHARED_DIRECTORY, "/home/vagrant/vbox"
+  ### Map the chef-server directory to the ~/vbox/server directory in the box
+  config.vm.synced_folder SERVER_SHARED_DIRECTORY, "/home/vagrant/vbox/server"
 
   config.vm.provider 'virtualbox' do |vb|
     vb.memory = BOX_RAM_MB

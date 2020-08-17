@@ -30,10 +30,11 @@ Note: USE AT YOUR OWN RISK!
 
 - [Habitat Builder with S3 and RDS](./examples/HabitatBuilderWithS3RDS.md)
 
-## Cloud and Local Bootstrap
+## Start Environments 
 
-- [Vagrant - Chef Infra](./examples/bootstrapping/vagrant/chef-infra-server/README.md)
-- [Vagrant - Automate, Chef Infra, Workstation, Inspec](./examples/bootstrapping/vagrant/onboarding/README.md)
+- [Vagrant - Chef Infra Server](./examples/vagrant/chef-server/README.md)
+- [Vagrant - Chef Node](./examples/vagrant/chef-node/README.md)
+- [Vagrant - Starter Environment](./examples/vagrant/starter-environment/README.md)
 
 ## Other
 
@@ -41,7 +42,6 @@ Note: USE AT YOUR OWN RISK!
 - [Example Pipelines](./examples/pipelines/PipelineOverview.md)
 - [Test Kitchen](./examples/test-kitchen/README.md)
 - [Technical Reviews](./technical-reviews/README.md)
-- [Vagrant](./examples/vagrant/chef-infra-server/README.md)
 
 ### Contributing
 

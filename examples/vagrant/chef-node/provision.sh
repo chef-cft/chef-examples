@@ -19,7 +19,6 @@ if [[ $OS_TYPE == *'ubuntu'* ]]
 then
   wget https://packages.chef.io/files/stable/chef-workstation/$CHEF_WORKSTATION_VERSION/ubuntu/$OS_VERSION/chef-workstation_$CHEF_WORKSTATION_VERSION-1_amd64.deb
   sudo dpkg -i ./chef-workstation_$CHEF_WORKSTATION_VERSION-1_amd64.deb
-#   echo "foo"
 else
   wget https://packages.chef.io/files/stable/chef-workstation/$CHEF_WORKSTATION_VERSION/el/$OS_VERSION/chef-workstation-$CHEF_WORKSTATION_VERSION-1.el$OS_VERSION.x86_64.rpm
   rpm -Uvh ./chef-workstation_$CHEF_WORKSTATION_VERSION.el$OS_VERSION-1.x86_64.rpm
@@ -38,6 +37,23 @@ echo "******************"
 echo "Adjust /etc/hosts "
 echo "******************"
 sudo echo "10.11.12.13 server.bootstrap" >> /etc/hosts
+
+
+# Make this key based going forward...
+echo ""
+echo ""
+echo "*********************************"
+echo " Adjust secure SSH Configuration "
+echo "**********************************"
+if [[ $OS_TYPE == *'centos'* ]]
+then
+  echo ""
+  echo "*************************************"
+  echo "Centos Machine : Allowing PasswordAuth"
+  echo "*************************************"
+  sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication  yes/g' /etc/ssh/sshd_config
+  sudo systemctl restart sshd.service
+fi
 
 echo ""
 echo ""

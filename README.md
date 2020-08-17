@@ -30,11 +30,6 @@ Note: USE AT YOUR OWN RISK!
 
 - [Habitat Builder with S3 and RDS](./examples/HabitatBuilderWithS3RDS.md)
 
-## Cloud and Local Bootstrap
-
-- [Vagrant - Chef Infra](./examples/bootstrapping/vagrant/chef-infra-server/README.md)
-- [Vagrant - Automate, Chef Infra, Workstation, Inspec](./examples/bootstrapping/vagrant/onboarding/README.md)
-
 ## Other
 
 - [Writing Basic Cookstyle Rules](./examples/WorkstationWriteBasicCookstyle.md)

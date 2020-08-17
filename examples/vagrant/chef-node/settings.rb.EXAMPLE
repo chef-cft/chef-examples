@@ -1,2 +1,0 @@
-CLIENT_SHARED_DIRECTORY = "REPLACE WITH ABSOLUTE PATH TO chef-examples/examples/bootstrapping/vagrant/onboarding/"
-SERVER_SHARED_DIRECTORY = "REPLACE WITH ABSOLUTE PATH TO chef-examples/examples/bootstrapping/vagrant/onboarding/"

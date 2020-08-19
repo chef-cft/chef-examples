@@ -1,5 +1,13 @@
 # HowTo: Use Vagrant and Virtual Box to create a Chef Infra Server
 
+- Use the vagrantfile to spin up a stand alone chef server for older (or newer) versions.
+
+- This can be used to for:
+  - In-place upgrades from chef-server 12.x to 13.x on your local machine for POC testing
+  - Verifying migration steps from [here](https://blog.chef.io/migrating-chef-server-knife-ec-backup-knife-tidy/), with the assumption the chef-server has nodes on it or [chef-load](https://github.com/chef/chef-load) was run.
+    - For migrations, two instances are required
+  - A need to have a chef-server of a specific version that is ephemeral
+
 ## Before You Start
 
 ### Assumptions
@@ -10,23 +18,29 @@
   - For example, `vagrant box add generic/ubuntu1604` or `vagrant box add generic/rhel6`
 - A `vagrant box add` of the type of OS you want to install the chef server on has been executed
   - All free boxes can be found [here](https://app.vagrantup.com/boxes/search)
+- The ip address `10.11.12.13` is not in use
+  - Change the `BOX-IP` in the `vagrantfile` if it is in use
 
 ### Versions tested
 
-- `generic/rhel6`
-  - `chef-server 12-17-15`
-  - `chef-server 12-3-0`
-- `generic/rhel7`
-  - `chef-server 13-2-0`
-- `generic/rhel8`
-  - `chef-server 13-2-0`
-- `generic/ubuntu1604`
-  - `chef-server 12-17-15`
-  - `chef-server 12-3-0`
-- `generic/centos7`
-  - `chef-server 12-17-15`
-- `generic/ubuntu1804`
-  - `chef-server 13.2.0`
+- Chef Server Stand Alone Install & In-Place Upgrade
+  - `generic/rhel6`
+    - `chef-server 12-17-15`
+    - `chef-server 12-3-0`
+  - `generic/rhel7`
+    - `chef-server 13-2-0`
+  - `generic/rhel8`
+    - `chef-server 13-2-0`
+  - `generic/ubuntu1604`
+    - `chef-server 12-17-15`
+    - `chef-server 12-3-0`
+  - `generic/centos7`
+    - `chef-server 12-17-15`
+  - `generic/ubuntu1804`
+    - `chef-server 13.2.0`
+
+- Chef Server Migration
+  -`generic/ubuntu1604` to `generic/ubuntu1804`, `chef-server 12.17.15` to `chef-server 13.2.0`
 
 ## Provision a Chef Infra Server using Vagrant and Virtual Box
 
@@ -52,3 +66,9 @@
 
 - In the same directory where the `Vagrantfile` is located, run `vagrant ssh`
 - Once in, run `head -n1 /opt/opscode/version-manifest.txt` to verify the chef server version you expected to be installed is _actually_ installed
+
+## FAQ
+
+- Use centos unless a RHEL license is available to you/your organization.
+
+- For migrations, spin up two instances in two separate directories, make sure to change the IP address on one instance.

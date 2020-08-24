@@ -1,6 +1,6 @@
-# How-to - Write a Basic Cookstyle Cop
+# How-to - Write a basic Cookstyle Rule
 
-This guide will provide a basic introduction to writing and installing custom Cookstyle Cops.
+This guide will provide a basic introduction to writing and installing custom Cookstyle rules.
 
 ## Before You Start
 
@@ -8,6 +8,7 @@ This guide will provide a basic introduction to writing and installing custom Co
 
 * Chef Workstation with Cookstyle installed
 * Familiarity with Ruby
+* Install ruby-parse utility: `gem install parser`
 
 ### Tested Versions
 
@@ -15,9 +16,92 @@ This guide will provide a basic introduction to writing and installing custom Co
 * Cookstyle
 * Chef Infra
 
-## The Basics of Creating a Cookstyle Cop.
+## The Basics of Creating a Cookstyle test.
 
-### The Basic Format
+### The Basic Format (Chef Cookstyle 6.11/Workstation 20.7.96 and later)
+```
+module RuboCop
+ module Cop
+   module Chef
+     module ${Cop Type}
+       # Cookbook:: This is the cop’s purpose.
+       #
+       # @example
+       #
+       #   # bad
+       #   ${bad example code}
+       #
+       #   # good
+       #   ${good example code}
+       #
+       class ${Cop Name} < Base
+         MSG = 'This will be displayed on violation'.freeze
+ 
+         def_node_matcher :search_method?, <<-PATTERN
+           ${AST Pattern Here}
+         PATTERN
+
+         extend AutoCorrector
+         def on_send(node)
+           return unless search_method?(node)
+
+           add_offense(node) do |corrector|
+             new_val = 'new value'
+             corrector.replace(node.loc.expression, new_val)
+           end
+         end
+       end
+     end
+   end
+ end
+end
+```
+#### Example Rule
+```
+module RuboCop
+  module Cop
+    module Chef
+      module ChefCorrectness
+        # Cookbook:: metadata.rb maintainer_email field should be set to
+        # cs@chef.io
+        #
+        # @example
+        #
+        #   # bad
+        #   maintainer_email 'me@me.com'
+        #
+        #   # good
+        #   maintainer_email 'cs@chef.io'
+        #
+        class ChefMaintainerEmail < Base
+          MSG = 'Maintainer should be set to "cs@chef.io"'.freeze
+```
+The section above is the general basic form taken. Code comments document what the cop should do, and shows examples of what it flags and does not.
+
+MSG defines the message displayed with the violation. In this case, it will violate and tell the user that the 'Maintainer should be set to "cs@chef.io"' and prevent modifications to that string. 
+```
+          # Start checking nodes for matches.
+          def_node_matcher :chef_maintainer_email?, <<-PATTERN
+            (send nil? :maintainer_email
+              (str $_))
+          PATTERN
+```
+Here we define our matching pattern to check each code "node" for matching. In this case, we're looking for a line that starts with some kind of space and "maintainer_email," followed by a string. This is what will be matched when the rule is run and is expressed in AST. The trailing string is returned into a variable for later use.
+```
+         extend AutoCorrector
+         def on_send(node)
+           matched = chef_maintainer_email(node)
+           return if !matched || matched == 'cs@chef.io'
+
+           add_offense(node) do |corrector|
+             new_val = 'maintainer_email \'cs@chef.io\''
+             corrector.replace(node, new_val)
+           end
+         end
+```
+The actual matching happens here, along with autocorrection. The node matching block defined in the previous section is checked against all of the code. With the returned matching text, which gets stored in email, and checked to ensure cs@chef.io is matched, and if not, add an offense and correct.
+
+### The Basic Format (pre-Chef Cookstyle 6.11/Workstation 20.7.96)
 ```
 module RuboCop
  module Cop
@@ -35,17 +119,17 @@ module RuboCop
        #
        class ${Cop Name} < Cop
          MSG = 'This will be displayed on violation'.freeze
-
+ 
          def_node_matcher :search_method?, <<-PATTERN
            ${AST Pattern Here}
          PATTERN
-
+ 
          def on_send(node)
            search_method?(node) do |check|
              add_offense(node, location: :expression, message: MSG, severity: :refactor) unless check condition
            end
          end
-
+ 
          def autocorrect(node)
            lambda do |corrector|
              new_val = 'new value'
@@ -58,9 +142,61 @@ module RuboCop
  end
 end
 ```
+#### Example Rule
+```
+module RuboCop
+  module Cop
+    module Chef
+      module ChefCorrectness
+        # Cookbook:: metadata.rb maintainer_email field should be set to
+        # cs@chef.io
+        #
+        # @example
+        #
+        #   # bad
+        #   maintainer_email 'me@me.com'
+        #
+        #   # good
+        #   maintainer_email 'cs@chef.io'
+        #
+        class ChefMaintainerEmail < Cop
+          MSG = 'Maintainer should be set to "cs@chef.io"'.freeze
+```
+The section above is the general basic form taken. Code comments document what the cop should do, and shows examples of what it flags and does not.
+
+MSG defines the message displayed with the violation. In this case, it will violate and tell the user that the 'Maintainer should be set to "cs@chef.io"' and prevent modifications to that string. 
+```
+          # Start checking nodes for matches.
+          def_node_matcher :chef_maintainer_email?, <<-PATTERN
+            (send nil? :maintainer_email
+              (str $_))
+          PATTERN
+```
+Here we define our matching pattern to check each code "node" for matching. In this case, we're looking for a line that starts with some kind of space and "maintainer_email," followed by a string. This is what will be matched when the rule is run and is expressed in AST. The trailing string is returned into a variable for later use.
+```
+          def on_send(node)
+            chef_maintainer_email?(node) do |email|
+              add_offense(node, location: :expression, message: MSG, severity: :refactor) unless email == 'cs@chef.io'
+            end
+          end
+```
+The actual matching happens here. The node matching block defined in the previous section is checked against all of the code. With the returned matching text, which gets stored in email, and checked to ensure cs@chef.io is matched, and if not, add an offense.
+```
+          def autocorrect(node)
+            lambda do |corrector|
+              new_val = 'maintainer_email \'cs@chef.io\''
+              corrector.replace(node.loc.expression, new_val)
+            end
+          end
+        end
+      end
+    end
+  end
+end
+```
+The last method handles the autocorrection portion of the Cookstyle rules, and replaces the node with the defined value. 
 
 ### Node Matcher and AST
-
 Abstract Syntax Tree (AST) allows you to crawl trees of text, and the Rubocop documentation gives a good overview. It’s a good idea to read the following document from them, as it will give you a decent look at Cookstyle:
 https://rubocop.readthedocs.io/en/latest/development/
 
@@ -102,110 +238,43 @@ ruby-parse -e "bad example text here"
 However, if we want to look at a step through of each selector in that example to understand the selection better, we will want to use -LE:
 ```
 $ ruby-parse -LEe "bad example text here"
-bad example text here
-^~~ tIDENTIFIER "bad"                           expr_cmdarg  [0 <= cond] [0 <= cmdarg]
-bad example text here
-    ^~~~~~~ tIDENTIFIER "example"               expr_arg     [0 <= cond] [0 <= cmdarg]
-bad example text here
-            ^~~~ tIDENTIFIER "text"             expr_arg     [0 <= cond] [1 <= cmdarg]
-bad example text here
-                 ^~~~ tIDENTIFIER "here"        expr_arg     [0 <= cond] [11 <= cmdarg]
-bad example text here
-                     ^ false "$eof"             expr_arg     [0 <= cond] [111 <= cmdarg]
+bad example text here   
+^~~ tIDENTIFIER "bad"                           expr_cmdarg  [0 <= cond] [0 <= cmdarg] 
+bad example text here   
+    ^~~~~~~ tIDENTIFIER "example"               expr_arg     [0 <= cond] [0 <= cmdarg] 
+bad example text here   
+            ^~~~ tIDENTIFIER "text"             expr_arg     [0 <= cond] [1 <= cmdarg] 
+bad example text here   
+                 ^~~~ tIDENTIFIER "here"        expr_arg     [0 <= cond] [11 <= cmdarg] 
+bad example text here   
+                     ^ false "$eof"             expr_arg     [0 <= cond] [111 <= cmdarg] 
 s(:send, nil, :bad,
   s(:send, nil, :example,
     s(:send, nil, :text,
       s(:send, nil, :here))))
 bad example text here
-~~~ selector
+~~~ selector                    
 ~~~~~~~~~~~~~~~~~~~~~ expression
 s(:send, nil, :example,
   s(:send, nil, :text,
     s(:send, nil, :here)))
 bad example text here
-    ~~~~~~~ selector
+    ~~~~~~~ selector            
     ~~~~~~~~~~~~~~~~~ expression
 s(:send, nil, :text,
   s(:send, nil, :here))
 bad example text here
-            ~~~~ selector
+            ~~~~ selector       
             ~~~~~~~~~ expression
 s(:send, nil, :here)
 bad example text here
-                 ~~~~ selector
+                 ~~~~ selector  
                  ~~~~ expression
 ```
-## Example Rule
-```
-module RuboCop
-  module Cop
-    module Chef
-      module ChefCorrectness
-        # Cookbook:: metadata.rb maintainer_email field should be set to
-        # cs@chef.io
-        #
-        # @example
-        #
-        #   # bad
-        #   maintainer_email 'me@me.com'
-        #
-        #   # good
-        #   maintainer_email 'cs@chef.io'
-        #
-        class ChefMaintainerEmail < Cop
-          MSG = 'Maintainer should be set to "cs@chef.io"'.freeze
-```
-The section above is the general basic form taken. Code comments document what the cop should do, and shows examples of what it flags and does not.
-
-MSG defines the message displayed with the violation. In this case, it will violate and tell the user that the 'Maintainer should be set to "cs@chef.io"' and prevent modifications to that string.
-```
-          # Start checking nodes for matches.
-          def_node_matcher :chef_maintainer_email?, <<-PATTERN
-            (send nil? :maintainer_email
-              (str $_))
-          PATTERN
-```
-Here we define our matching pattern to check each code "node" for matching. In this case, we're looking for a line that starts with some kind of space and "maintainer_email," followed by a string. This is what will be matched when the rule is run and is expressed in AST. The trailing string is returned into a variable for later use.
-```
-          def on_send(node)
-            chef_maintainer_email?(node) do |email|
-              add_offense(node, location: :expression, message: MSG, severity: :refactor) unless email == 'cs@chef.io'
-            end
-          end
-```
-The actual matching happens here. The node matching block defined in the previous section is checked against all of the code. With the returned matching text, which gets stored in email, and checked to ensure cs@chef.io is matched, and if not, add an offense.
-```
-          def autocorrect(node)
-            lambda do |corrector|
-              new_val = 'maintainer_email \'cs@chef.io\''
-              corrector.replace(node.loc.expression, new_val)
-            end
-          end
-        end
-      end
-    end
-  end
-end
-```
-The last method handles the autocorrection portion of the Cookstyle rules, and replaces the node with the defined value.
-
-## Testing Example Rule in Cookbook
-To test example rule, a `.rubocop.yml` needs to be created directly in the cookbook or as a reference, inherited within the cookbook.
-```yaml
-require:
-- ./cop.rb # Location and name of custom cop
-ChefCorrectness/ChefMaintainerEmail:
- Description: Checks to ensure correct email set as maintainer. # Description of Cop
- Enabled: true # Enable the Cop
- VersionAdded: '5.1.0' #Version in which it was added
- Include: # Any Files to Include
-  - '**/metadata.rb'
-```
-Cookstyle will utilize the rubocop.yml to enable and add the custom cop to check against.
 
 ## FAQs
 1. How do I return the matched text, or a portion of it, for testing specific values?<br />
 $ combined with a matcher will return that match. This will allow partial matches on a value. ‘…’ will return an array, while ‘_’ will return a string.
-2. The matches aren't returning as expected using the generated AST. What's wrong?<br />
-Use `:send, nil?` instead of `:send, nil`.<br />
+2. The matches aren't returning as expected using the generated AST. What's wrong?<br /> 
+Use `:send, nil?` instead of `:send, nil`.<br /> 
 Examples: $... will return an array of matches, $_ will return a string.

@@ -1,4 +1,4 @@
-# How-to - Write a basic Cookstyle Rule
+# How-to - Write a Basic Cookstyle Rule
 
 This guide will provide a basic introduction to writing and installing custom Cookstyle rules.
 

@@ -5,6 +5,9 @@ This cookbook will store examples on how to grab secrets from tools like Hashico
 ### Assumptions
 * This guide assumes that you have a working Vault solution up and running that you can interact with
 
+**Note:** The way that the vault token is used in this cookbook is not the way we recommended to store the vault_token. 
+This is just an example on how to communicate with the sercrets management platform. Please consider using encrypted databags or some other means to protect the vault token.
+
 ### Tested on chef client version 16+
 
 ### Cookbook
@@ -23,7 +26,7 @@ This cookbook will store examples on how to grab secrets from tools like Hashico
 
 `default['secrets_managment']['hashi']['vault_address']`
 
-The address to the hashi corp vault *Example*: 
+The address to the hashi corp vault *Example*:
  default['secrets_managment']['hashi']['vault_address'] = 'https://myvault.chefsuccess.io:8200'
 
 `default['secrets_managment']['hashi']['vault_token']`
@@ -37,6 +40,6 @@ The path to the secrets Example:
  default['secrets_managment']['hashi']['vault_path'] = 'secret/my-app'
 
 `default['secrets_managment']['hashi']['vault_role']`
-
+ 
 The name of the app role is used. Leave an empty string if a app role is not used Example:
  default['secrets_managment']['hashi']['vault_role'] = 'web'

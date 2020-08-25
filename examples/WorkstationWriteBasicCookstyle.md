@@ -22,39 +22,39 @@ This guide will provide a basic introduction to writing and installing custom Co
 
 ```ruby
 module RuboCop
- module Cop
-   module Chef
-     module ${Cop Type}
-       # Cookbook:: This is the cop’s purpose.
-       #
-       # @example
-       #
-       #   # bad
-       #   ${bad example code}
-       #
-       #   # good
-       #   ${good example code}
-       #
-       class ${Cop Name} < Base
-         MSG = 'This will be displayed on violation'.freeze
+  module Cop
+    module ${Module Name}
+      module ${Cop Type} # You can nest/organize the modules as needed
+        # Cookbook:: This is the cop’s purpose.
+        #
+        # @example
+        #
+        #   # bad
+        #   ${bad example code}
+        #
+        #   # good
+        #   ${good example code}
+        #
+        class ${Cop Name} < Base
+          MSG = 'This will be displayed on violation'.freeze
 
-         def_node_matcher :search_method?, <<-PATTERN
-           ${AST Pattern Here}
-         PATTERN
+          def_node_matcher :search_method?, <<-PATTERN
+            ${AST Pattern Here}
+          PATTERN
 
-         extend AutoCorrector
-         def on_send(node)
-           return unless search_method?(node)
+          extend AutoCorrector
+          def on_send(node)
+            return unless search_method?(node)
 
-           add_offense(node) do |corrector|
-             new_val = 'new value'
-             corrector.replace(node.loc.expression, new_val)
-           end
-         end
-       end
-     end
-   end
- end
+            add_offense(node) do |corrector|
+              new_val = 'new value'
+              corrector.replace(node.loc.expression, new_val)
+            end
+          end
+        end
+      end
+    end
+  end
 end
 ```
 
@@ -63,21 +63,20 @@ end
 ```ruby
 module RuboCop
   module Cop
-    module Chef
-      module ChefCorrectness
-        # Cookbook:: metadata.rb maintainer_email field should be set to
-        # cs@chef.io
-        #
-        # @example
-        #
-        #   # bad
-        #   maintainer_email 'me@me.com'
-        #
-        #   # good
-        #   maintainer_email 'cs@chef.io'
-        #
-        class ChefMaintainerEmail < Base
-          MSG = 'Maintainer should be set to "cs@chef.io"'.freeze
+    module MyCustomRules
+      # Cookbook:: metadata.rb maintainer_email field should be set to
+      # cs@chef.io
+      #
+      # @example
+      #
+      #   # bad
+      #   maintainer_email 'me@me.com'
+      #
+      #   # good
+      #   maintainer_email 'cs@chef.io'
+      #
+      class ChefMaintainerEmail < Base
+        MSG = 'Maintainer should be set to "cs@chef.io"'.freeze
 ```
 
 The section above is the general basic form taken. Code comments document what the cop should do, and shows examples of what it flags and does not.
@@ -85,26 +84,26 @@ The section above is the general basic form taken. Code comments document what t
 MSG defines the message displayed with the violation. In this case, it will violate and tell the user that the 'Maintainer should be set to "cs@chef.io"' and prevent modifications to that string.
 
 ```ruby
-          # Start checking nodes for matches.
-          def_node_matcher :chef_maintainer_email?, <<-PATTERN
-            (send nil? :maintainer_email
-              (str $_))
-          PATTERN
+        # Start checking nodes for matches.
+        def_node_matcher :chef_maintainer_email?, <<-PATTERN
+          (send nil? :maintainer_email
+            (str $_))
+        PATTERN
 ```
 
 Here we define our matching pattern to check each code "node" for matching. In this case, we're looking for a line that starts with some kind of space and "maintainer_email," followed by a string. This is what will be matched when the rule is run and is expressed in AST. The trailing string is returned into a variable for later use.
 
 ```ruby
-         extend AutoCorrector
-         def on_send(node)
-           matched = chef_maintainer_email(node)
-           return if !matched || matched == 'cs@chef.io'
+        extend AutoCorrector
+        def on_send(node)
+          matched = chef_maintainer_email(node)
+          return if !matched || matched == 'cs@chef.io'
 
-           add_offense(node) do |corrector|
-             new_val = 'maintainer_email \'cs@chef.io\''
-             corrector.replace(node, new_val)
-           end
-         end
+          add_offense(node) do |corrector|
+            new_val = 'maintainer_email \'cs@chef.io\''
+            corrector.replace(node, new_val)
+          end
+        end
 ```
 
 The actual matching happens here, along with autocorrection. The node matching block defined in the previous section is checked against all of the code. With the returned matching text, which gets stored in matched, and checked to ensure cs@chef.io is matched, and if not, add an offense and correct.
@@ -113,42 +112,40 @@ The actual matching happens here, along with autocorrection. The node matching b
 
 ```ruby
 module RuboCop
- module Cop
-   module Chef
-     module ${Cop Type}
-       # Cookbook:: This is the cop’s purpose.
-       #
-       # @example
-       #
-       #   # bad
-       #   ${bad example code}
-       #
-       #   # good
-       #   ${good example code}
-       #
-       class ${Cop Name} < Cop
-         MSG = 'This will be displayed on violation'.freeze
+  module Cop
+    module ${Cop Type}
+      # Cookbook:: This is the cop’s purpose.
+      #
+      # @example
+      #
+      #   # bad
+      #   ${bad example code}
+      #
+      #   # good
+      #   ${good example code}
+      #
+      class ${Cop Name} < Cop
+        MSG = 'This will be displayed on violation'.freeze
 
-         def_node_matcher :search_method?, <<-PATTERN
-           ${AST Pattern Here}
-         PATTERN
+        def_node_matcher :search_method?, <<-PATTERN
+          ${AST Pattern Here}
+        PATTERN
 
-         def on_send(node)
-           search_method?(node) do |check|
-             add_offense(node, location: :expression, message: MSG, severity: :refactor) unless check condition
-           end
-         end
+        def on_send(node)
+          search_method?(node) do |check|
+            add_offense(node, location: :expression, message: MSG, severity: :refactor) unless check condition
+          end
+        end
 
-         def autocorrect(node)
-           lambda do |corrector|
-             new_val = 'new value'
-             corrector.replace(node.loc.expression, new_val)
-           end
-         end
-       end
-     end
-   end
- end
+        def autocorrect(node)
+          lambda do |corrector|
+            new_val = 'new value'
+            corrector.replace(node.loc.expression, new_val)
+          end
+        end
+      end
+    end
+  end
 end
 ```
 
@@ -157,8 +154,7 @@ end
 ```ruby
 module RuboCop
   module Cop
-    module Chef
-      module ChefCorrectness
+    module MyCustomRules
         # Cookbook:: metadata.rb maintainer_email field should be set to
         # cs@chef.io
         #
@@ -199,11 +195,10 @@ Here we define our matching pattern to check each code "node" for matching. In t
 The actual matching happens here. The node matching block defined in the previous section is checked against all of the code. With the returned matching text, which gets stored in email, and checked to ensure cs@chef.io is matched, and if not, add an offense.
 
 ```ruby
-          def autocorrect(node)
-            lambda do |corrector|
-              new_val = 'maintainer_email \'cs@chef.io\''
-              corrector.replace(node.loc.expression, new_val)
-            end
+        def autocorrect(node)
+          lambda do |corrector|
+            new_val = 'maintainer_email \'cs@chef.io\''
+            corrector.replace(node.loc.expression, new_val)
           end
         end
       end
@@ -295,6 +290,23 @@ bad example text here
                  ~~~~ selector  
                  ~~~~ expression
 ```
+
+## Testing Example Rule in Cookbook
+
+To test example rule, a `.rubocop.yml` needs to be created directly in the cookbook or as a reference, inherited within the cookbook.
+
+```yaml
+require:
+- ./cop.rb # Location and name of custom cop
+MyCustomRules/ChefMaintainerEmail:
+ Description: Checks to ensure correct email set as maintainer. # Description of Cop
+ Enabled: true # Enable the Cop
+ VersionAdded: '5.1.0' #Version in which it was added
+ Include: # Any Files to Include
+  - '**/metadata.rb'
+```
+
+Cookstyle will utilize the rubocop.yml to enable and add the custom cop to check against.
 
 ## FAQs
 

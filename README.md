@@ -13,6 +13,7 @@ Note: USE AT YOUR OWN RISK!
 - [Automate SAML with AzureAD](./examples/A2SamlWithAzureAD.md)
 - [Grant Access to Applications Dashboard](./examples/A2GrantAppDashboardAccess.md)
 - [Ruby checkins report against the Automate API](./examples/a2-api/README.md)
+- [Ruby Nodes and Event Report, Accepting Values At The Command Line](./examples/a2-api/nodes_and_events_reporter.rb)
 
 ## Infra
 

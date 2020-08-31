@@ -2,7 +2,6 @@
 chef-server/*.toml
 chef-server/*.pem
 chef-node/node/*
-chef-server/server/*
 
 ## Skip customizations
 chef-node/settings.rb

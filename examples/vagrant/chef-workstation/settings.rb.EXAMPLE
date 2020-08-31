@@ -1,0 +1,3 @@
+CLIENT_SHARED_DIRECTORY = "REPLACE WITH ABSOLUTE PATH TO chef-examples/examples/bootstrapping/vagrant/onboarding/"
+SERVER_SHARED_DIRECTORY = "REPLACE WITH ABSOLUTE PATH TO chef-examples/examples/bootstrapping/vagrant/onboarding/"
+WORKSTATION_SHARED_DIRECTORY = File.absolute_path('.') + File::Separator

@@ -5,11 +5,12 @@
 BOX = 'generic/ubuntu1604'
 OS_TYPE = BOX.split('/')[-1] # i.e. rhel, centos, ubuntu
 OS_VERSION = OS_TYPE.gsub(/[^0-9]/, '') # i.e. 6 or 18.04 or 9
-BOX_NAME = "node.bootstrap"
+BOX_NAME = "workstation.bootstrap"
 BOX_RAM_MB = '2048'
 BOX_CPU_COUNT = '1'
-BOX_IP = '10.11.12.42'
-HOSTNAME = "node.bootstrap"
+BOX_IP = '10.11.12.43'
+CHEF_WORKSTATION_VERSION = '20.8.111'
+HOSTNAME = "workstation.bootstrap"
 
 ### Include our localized settings and any overrides
 require './settings.rb'
@@ -31,6 +32,9 @@ Vagrant.configure('2') do |config|
   ### Map the chef-node directory to the ~/vbox/node directory in the box
   config.vm.synced_folder NODE_SHARED_DIRECTORY, "/home/vagrant/vbox/node"
 
+  ### Map the chef-workstation directory to the ~/vbox/workstation directory in the box
+  config.vm.synced_folder WORKSTATION_SHARED_DIRECTORY, "/home/vagrant/vbox/workstation"
+
   config.vm.provider 'virtualbox' do |vb|
     vb.memory = BOX_RAM_MB
     vb.cpus = BOX_CPU_COUNT
@@ -38,5 +42,5 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.provision 'shell', path: 'provision.sh',
-    args: [OS_TYPE, OS_VERSION]
+    args: [CHEF_WORKSTATION_VERSION, OS_TYPE, OS_VERSION]
 end

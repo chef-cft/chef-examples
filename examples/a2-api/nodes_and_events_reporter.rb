@@ -19,16 +19,15 @@ require 'Time'
 
  ####################################################################### EXAMPLES  #######################################################################
 # Prints All Nodes
-# ./walgreens_api_v6.0.rb -r node -o report.txt --url URL --token TOKEN
 
 # PRINTS MISSING NODES
-# ./walgreens_api_v6.0.rb -r node -o report.txt --url URL --token TOKEN --status missing
+# /nodes_and_events_reporter.rb -r node -o report.txt --url URL --token TOKEN --status missing
 
 # Prints ALL EVENTS
-# walgreens_api_v6.0.rb -r event -o report.txt --url URL --token TOKEN
+# ./nodes_and_events_reporter.rb -r event -o report.txt --url URL --token TOKEN
 
 # Prints Client Events
-# ./walgreens_api_v6.0.rb -r event -o report.txt --url URL --token TOKEN   --type client
+# /nodes_and_events_reporter.rb -r event -o report.txt --url URL --token TOKEN   --type client
 
 # Prints Client Events At Specific Time
 # ./nodes_and_events_reporter.rb -r event -o report.txt --type client --start_date 2020-09-19'T'12:00:00Z

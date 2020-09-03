@@ -1,4 +1,4 @@
-These 2 scripts provide examples of using Ruby to make queries against the [Chef Automate API](https://automate.chef.io/docs/api/). The [checkins.rb](checkins.rb) script provides lists of nodes by their check-in times. The [node_count.rb](node_count.rb) gives the number of nodes that have checked in, are missing, and have failed broken down by Chef Infra Servers and Organizations.
+These 2 scripts provide examples of using Ruby to make queries against the [Chef Automate API](https://automate.chef.io/docs/api/). The [checkins.rb](checkins.rb) script provides lists of nodes by their check-in times. The [node_count.rb](node_count.rb) gives the number of nodes that have checked in, are missing, and have failed broken down by Chef Infra Servers and Organizations. [audit_reports.rb] provides the last 24 hours of compliance reports.
 
 # Configuration
 
@@ -79,4 +79,16 @@ $ ./node_count.rb json
     }
   }
 }
+```
+
+# audit_reports.rb
+
+The [audit_reports.rb](audit_reports.rb) script provides the export of https://docs.chef.io/automate/api/#operation/Export for the last 24 hours of compliance reports.
+
+```
+$ ./audit_reports.rb > output.json
+```
+or if you prefer CSV
+```
+$ ./audit_reports.rb csv > output.csv
 ```

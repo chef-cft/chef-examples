@@ -28,8 +28,6 @@ else
   type = 'json'
 end
 
-# filter columns: node_name, platform name, platform release, profile name, environment, control id, control title, result status, result message
-
 # https://docs.chef.io/automate/api/#operation/Export
 uri = URI.parse("#{automate_url}/api/v0/compliance/reporting/export")
 
@@ -52,4 +50,13 @@ response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
   http.request(request)
 end
 
-puts response.body
+if type.eql?('csv')
+  require 'csv'
+  table = CSV::Table.new(CSV.parse(response.body, headers:true))
+  ARGV[1..].each do |col| # remove columns by header
+    table.delete(col)
+  end
+  puts table.to_csv
+else
+  puts response.body
+end

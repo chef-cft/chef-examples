@@ -19,10 +19,16 @@ if automate_token.nil?
   exit 1
 end
 
-# JSON is the default
 if ARGV[0].nil?
+  days = 1
+else
+  days = ARGV[0].to_i
+end
+
+# JSON is the default
+if ARGV[1].nil?
   type = 'json'
-elsif ARGV[0].downcase.eql?('csv')
+elsif ARGV[1].downcase.eql?('csv')
   type = 'csv'
 else
   type = 'json'
@@ -42,7 +48,7 @@ request.body = {
                 "type" => "#{type}",
                 "filters":[
                            {"type":"end_time","values":["#{Time.now.utc.iso8601}"]},
-                           {"type":"start_time","values":["#{(Time.now - 86400).utc.iso8601}"]},
+                           {"type":"start_time","values":["#{(Time.now - (days*86400)).utc.iso8601}"]},
                           ]
                }.to_json
 
@@ -53,7 +59,7 @@ end
 if type.eql?('csv')
   require 'csv'
   table = CSV::Table.new(CSV.parse(response.body, headers:true))
-  ARGV[1..].each do |col| # remove columns by header
+  ARGV[2..].each do |col| # remove columns by header
     table.delete(col)
   end
   puts table.to_csv

@@ -1,4 +1,4 @@
-These 2 scripts provide examples of using Ruby to make queries against the [Chef Automate API](https://automate.chef.io/docs/api/). The [checkins.rb](checkins.rb) script provides lists of nodes by their check-in times. The [node_count.rb](node_count.rb) gives the number of nodes that have checked in, are missing, and have failed broken down by Chef Infra Servers and Organizations. [audit_reports.rb] provides the last 24 hours of compliance reports with the option of removing columns from the CSV output.
+These 2 scripts provide examples of using Ruby to make queries against the [Chef Automate API](https://automate.chef.io/docs/api/). The [checkins.rb](checkins.rb) script provides lists of nodes by their check-in times. The [node_count.rb](node_count.rb) gives the number of nodes that have checked in, are missing, and have failed broken down by Chef Infra Servers and Organizations. [audit_reports.rb](audit_reports.rb) provides the last compliance reports for a configurable number of days with the option of removing columns from the CSV output.
 
 # Configuration
 
@@ -83,13 +83,14 @@ $ ./node_count.rb json
 
 # audit_reports.rb
 
-The [audit_reports.rb](audit_reports.rb) script provides the export of https://docs.chef.io/automate/api/#operation/Export for the last 24 hours of compliance reports with the option of removing columns from the CSV output.
+The [audit_reports.rb](audit_reports.rb) script provides the export of https://docs.chef.io/automate/api/#operation/Export the last compliance report for nodes, configurable by the number of days and with the option of removing columns from the CSV output.
 
+Last 3 days of JSON
 ```
-$ ./audit_reports.rb > output.json
+$ ./audit_reports.rb 3 > output.json
 ```
 
 If you prefer CSV, you may add additional filtering by passing the quoted columns to remove.
 ```
-$ ./audit_reports.rb csv "End Time" "Platform Name" "Platform Release" "Environment" FQDN "Profile Summary" "Control Title" "Control Impact" "Waived (true/false)" "Result Run Time" > output.csv
+$ ./audit_reports.rb 1 csv "End Time" "Platform Name" "Platform Release" "Environment" FQDN "Profile Summary" "Control Title" "Control Impact" "Waived (true/false)" "Result Run Time" > output.csv
 ```

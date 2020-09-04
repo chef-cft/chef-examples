@@ -59,7 +59,7 @@ end
 if type.eql?('csv')
   require 'csv'
   table = CSV::Table.new(CSV.parse(response.body, headers:true))
-  ARGV[2..].each do |col| # remove columns by header
+  ARGV[2..-1].each do |col| # remove columns by header
     table.delete(col)
   end
   puts table.to_csv

@@ -1,0 +1,38 @@
+##############################################################################################################
+# Define Common Tags - these tags get applied to every EC2 instance that gets spun up via this terraform plan.
+# NOTE:  The contact and project tags are also used to generate DNS records.  Example DNS record with the data
+#        below:  joeuser-atlantis-automate.<your domain here>.  Keep DNS records in mind when setting these
+#        values (ie, don't use underscores or ampersands as those will break DNS).
+##############################################################################################################
+tag_application = "demo"
+tag_contact = "joeuser"
+tag_customer = "Acme"
+tag_dept = "sales"
+tag_production = "No"
+tag_project = "atlantis"
+tag_sleep = "true"
+tag_ttl = "2"
+
+# Define Chef User
+email = "joe_user@acme.io"
+first_name = "Joe"
+last_name = "User"
+username = "joe"
+
+# Define which AWS profile to use on your ~/.aws/config
+profile = "default"
+
+# Define Key Name - This is the name of your key at AWS.
+key_name = "joe_users_key"
+
+# Instance Key - The local copy of your key file.  This defaults to ~/.ssh/id_rsa if left unset.
+instance_key = "~/.ssh/joe_users_key"
+
+# Define Sample Node Counts - Leaving these set to 0 will prevent the sample nodes from spinning up.
+centos_sample_node_count = 0
+
+# Define A2 License
+# Only place a valid A2 license in this space.  If you don't have one or don't want to use it, leave this commented out.
+# a2_license = ""
+
+domain = "route53domain.io"

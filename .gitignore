@@ -2,3 +2,6 @@
 .kitchen/
 .kitchen.yml
 .vagrant/
+.terraform
+*tfvars
+*tfstate*

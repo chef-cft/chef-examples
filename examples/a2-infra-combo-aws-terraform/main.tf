@@ -39,33 +39,3 @@ module "centos_sample_nodes" {
   node_count     = var.centos_sample_node_count
   domain_zone_id = data.aws_route53_zone.selected.zone_id
 }
-
-module "rhel_sample_nodes" {
-  source         = "./modules/rhel_sample_nodes"
-  common_tags    = local.common_tags
-  domain         = var.domain
-  key_name       = var.key_name
-  instance_key   = var.instance_key
-  node_count     = var.rhel_sample_node_count
-  domain_zone_id = data.aws_route53_zone.selected.zone_id
-}
-
-module "sles_sample_nodes" {
-  source         = "./modules/sles_sample_nodes"
-  common_tags    = local.common_tags
-  domain         = var.domain
-  key_name       = var.key_name
-  instance_key   = var.instance_key
-  node_count     = var.sles_sample_node_count
-  domain_zone_id = data.aws_route53_zone.selected.zone_id
-}
-
-module "ubuntu_sample_nodes" {
-  source         = "./modules/ubuntu_sample_nodes"
-  common_tags    = local.common_tags
-  domain         = var.domain
-  key_name       = var.key_name
-  instance_key   = var.instance_key
-  node_count     = var.ubuntu_sample_node_count
-  domain_zone_id = data.aws_route53_zone.selected.zone_id
-}

@@ -26,9 +26,15 @@ This module controls spinning up CentOS sample nodes.  It uses the latest availa
 
 ## Credit
 Some ideas, code, and inspiration taken from:
+
 https://github.com/mengesb/tf_chef_server
 
 https://github.com/chef-cft/quickspin - template from this minus some features
+
+## To-do Roadmap
+- Include vault to store pem files for sample nodes
+- Install Chef-client onto sample nodes
+- Bootstrap sample nodes onto automate server
 
 ## License
 This is licensed under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).

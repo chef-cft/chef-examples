@@ -83,14 +83,29 @@ $ ./node_count.rb json
 
 # audit_reports.rb
 
-The [audit_reports.rb](audit_reports.rb) script provides the export of https://docs.chef.io/automate/api/#operation/Export the last compliance report for nodes, configurable by the number of days and with the option of removing columns from the CSV output.
+The [audit_reports.rb](audit_reports.rb) script provides the export of https://docs.chef.io/automate/api/#operation/Export the last compliance report for nodes, configurable by the number of days with the option of filters and removing columns from the CSV output.
+
+## Usage
+
+```
+audit_reports.rb DAYS CSV|JSON QUERYFILTER HEADERS
+```
+
+CLI options that are not specified default to empty headers and filters with 1 day of JSON.
+
+## Examples
 
 Last 3 days of JSON
 ```
 $ ./audit_reports.rb 3 > output.json
 ```
 
-If you prefer CSV, you may add additional filtering by passing the quoted columns to remove.
+7 days of CSV filtered by organization and platform
 ```
-$ ./audit_reports.rb 1 csv "End Time" "Platform Name" "Platform Release" "Environment" FQDN "Profile Summary" "Control Title" "Control Impact" "Waived (true/false)" "Result Run Time" > output.csv
+$ ./audit_reports.rb 7 csv '[{"platform_with_version":["debian 10.5"]},{"organization":["chef_managed_org"]}]' > output.csv
+```
+
+1 day of CSV with additional output filtering by passing the quoted columns to remove. Note the empty hash of filters.
+```
+$ ./audit_reports.rb 1 csv '{}' "End Time" "Platform Name" "Platform Release" "Environment" FQDN "Profile Summary" "Control Title" "Control Impact" "Waived (true/false)" "Result Run Time" > output.csv
 ```

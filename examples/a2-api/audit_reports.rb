@@ -36,12 +36,17 @@ end
 
 body = { "type" => "#{type}",
         "filters": [
-          {"type": "end_time", "values": ["#{Time.now.utc.iso8601}"]},
-          {"type": "start_time", "values": ["#{(Time.now - (days * 86400)).utc.iso8601}"]},
+          { "type": "end_time", "values": ["#{Time.now.utc.iso8601}"] },
+          { "type": "start_time", "values": ["#{(Time.now - (days * 86400)).utc.iso8601}"] },
         ] }
 
-# if ARGV[2].nil?
-#   filter =
+unless ARGV[2].nil?
+  filters = eval(ARGV[2])
+  filters.each do |filter|
+    f = { type: filter.keys[0].to_s, values: filter.values[0] }
+    body[:filters].push(f)
+  end
+end
 
 # https://docs.chef.io/automate/api/#operation/Export
 uri = URI.parse("#{automate_url}/api/v0/compliance/reporting/export")
@@ -61,7 +66,7 @@ end
 if type.eql?("csv")
   require "csv"
   table = CSV::Table.new(CSV.parse(response.body, headers: true))
-  ARGV[2..-1].each do |col| # remove columns by header
+  ARGV[3..-1].each do |col| # remove columns by header
     table.delete(col)
   end
   puts table.to_csv

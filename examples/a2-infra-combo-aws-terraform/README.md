@@ -1,4 +1,4 @@
-# Quickspin
+# A2-Infra-AWS-Terraform
 This repo contains terraform code that will quickly:
 - Spin up a Chef server + Chef Automate combo
 - Spin up empty centos nodes to manage (OPTIONAL)

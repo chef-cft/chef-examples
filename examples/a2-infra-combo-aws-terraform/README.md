@@ -27,6 +27,7 @@ This module controls spinning up CentOS sample nodes.  It uses the latest availa
 ## Credit
 Some ideas, code, and inspiration taken from:
 https://github.com/mengesb/tf_chef_server
+
 https://github.com/chef-cft/quickspin - template from this minus some features
 
 ## License

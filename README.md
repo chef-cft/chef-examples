@@ -12,7 +12,10 @@ Note: USE AT YOUR OWN RISK!
 - [Setup Automate with Let's Encrypt SSL Cert](./examples/A2WithLetsEncryptSSLCert.md)
 - [Automate SAML with AzureAD](./examples/A2SamlWithAzureAD.md)
 - [Grant Access to Applications Dashboard](./examples/A2GrantAppDashboardAccess.md)
-- [Ruby checkins report against the Automate API](./examples/a2-api/README.md)
+- [Ruby Automate API script for reporting last node checkins](./examples/a2-api/README.md#checkinsrb)
+- [Ruby Automate API script for reporting node counts by Chef Infra Servers, organizations, and status](./examples/a2-api/README.md#node_countrb)
+- [Ruby Automate API script for exporting latest audits with filtering](./examples/a2-api/README.md#audit_reportsrb)
+- [Ruby Nodes and Event Report, Accepting Values At The Command Line](./examples/a2-api/nodes_and_events_reporter.rb)
 
 ## Infra
 
@@ -30,7 +33,7 @@ Note: USE AT YOUR OWN RISK!
 
 - [Habitat Builder with S3 and RDS](./examples/HabitatBuilderWithS3RDS.md)
 
-## Start Environments 
+## Start Environments
 
 - [Vagrant - Chef Infra Server](./examples/vagrant/chef-server/README.md)
 - [Vagrant - Chef Node](./examples/vagrant/chef-node/README.md)

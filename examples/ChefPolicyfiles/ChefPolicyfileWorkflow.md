@@ -17,7 +17,7 @@ world).
 * [Step 1: Define Policies](#step-1-define-policies)
 * [Step 2: Define Policy Groups](#step-2-define-policy-groups)
 * [Step 3: Create a Base Policy](#step-3-create-a-base-policy)
-* [Step 4: Create a Deployable Policy](#step-4-create-a-deployable-policy)
+* [Step 4: Create Deployable Policies](#step-4-create-deployable-policies)
 * [Step 5: Bootstrap Nodes](#step-5-bootstrap-nodes)
 * [Step 6: Make Changes to a Deployable Policy](#step-6-make-changes-to-a-deployable-policy)
 * [Step 7: Make an Upstream (Base Policy) Change and then Update and Push Downstream (Deployable Policies)](#step-7-make-an-upstream-(base-policy)-change-and-then-update-and-push-downstream-(deployable-policies))
@@ -73,10 +73,10 @@ well and feel like you can work with the easiest, here's an example of an API
 app and it's supporting infrastructure, this imaginary app is called Ymir - and
 it serves API requests about Norse mythology:
 
-    <img src="../images/ChefPolicyfileWorkflow/1-1a.png" width="600">
+    <img src="./images/ChefPolicyfileWorkflow/1-1a.png" width="600">
 1. Find and circle the "Widest areas of uniqueness":
     
-    <img src="../images/ChefPolicyfileWorkflow/1-1b.png" width="600">
+    <img src="./images/ChefPolicyfileWorkflow/1-1b.png" width="600">
 1. Notice in the image above, I've circled 4 unique groups of nodes. These will 
 be our Policies. Let's go ahead and define them as follows:
    1. `ymir-lb`
@@ -207,80 +207,82 @@ going to do everything locally, later we'll tie it together with SCM and
 automation.
 
 In the following guide, I will walk through creating a base policy for Linux, 
-this will be pretty simplistic and will follow CIS Level 1 standards. I'll be
-using Centos 7 as my OS.
+this will be pretty simplistic and will follow 
+[DevSecOps Linux Baseline](https://dev-sec.io/baselines/linux/) standards. 
+I'll be using Centos 7 as my OS.
 
-We're going to use the concept of an "attributes cookbook" during this 
-excercise, so the cookbook that was generated will be used as the attributes
-cookbook. We're also going to be using [Effortless Audit](https://github.com/chef/effortless)
-combined with the [Habitat Cookbook](https://github.com/chef-cookbooks/habitat)
-to deploy and run compliance profiles.
+We're going to use the concept of an "attributes data bag" during this 
+excercise, that will allow us to define attributes based on a nodes'
+`policy_group`. The  [Audit Cookbook](https://github.com/chef-cookbooks/audit) 
+will also be used to run InSpec compliance scans against our nodes once they are
+bootstrapped. And finally, the `os-hardening` cookbook will be used to ensure 
+the node is hardened and meets our compliance criteria.
 
-1. This is what my local workspace directory structure looks like, go ahead and
-create a structure of your own:
-    ```
-    .
-    ├── base-policies
-    │   ├── base-linux
-    │   └── base-windows
-    └── ymir-policies
-        ├── api
-        ├── backend
-        ├── cache
-        └── lb
-    ```
-1. After you've created your directory structure to suit your needs, create the
-`base-linux` Policyfile "cookbook" by entering:
+### Let's Dive In!
+
+1. Create a directory locally to work from, then from the CLI `cd` into that
+directory and create the `base-linux` Policyfile "cookbook" by entering:
     ```
     chef generate cookbook base-linux
     ```
     This will generate a Policyfile cookbook (which is really just a cookbook
     that has a `Policyfile.rb` in the root directory) and pre-populate it with
     the name.
-1. Create an Effortless Audit Habitat Package, for more information on how to do
-this, here are some links:
-    * [Effortless Audit](https://github.com/chef/effortless), this is the 
-    official repo of all things Chef Effortless, there are good examples here.
-    For our purposes, we're going to use the DevSec Ops Linux Baseline as it's
-    fairly lightweight and ticks a lot of security boxes.
-    * [Learn Chef Rally](https://learn.chef.io), there's no direct link, but
-    once you enroll, search for "Effortless Audit and Remdiation Patterns" to go
-    through a comprehensive tutorial on creating an Effortless Audit package.
-1. Add the Habitat and OS-Hardening Cookbook to your `metadata.rb` file, 
+
+1. Add the Audit and OS-Hardening Cookbook to your `metadata.rb` file, 
 don't worry about version pinning, we'll do that in the Policyfile:
     ```
-    depends 'habitat'
+    depends 'audit'
     depends 'os-hardening'
     ```
     _While you're in there, go ahead and change the defaults to your own_
+1. Go ahead and delete the `.delivery/` directory that was created, we don't
+need that.
 1. Next, let's create our recipe files, under the `recipes/` dir, create
     ```
     compliance.rb
     ```
-    and a default attributes file in the root of the dir 
-    ```
-    attributes.rb
-    ```
-    Leave the `attributes.rb` alone for now.
 1. You can copy the contents of those files from this repo and change the
 variables to fit your environment. I also suggest at least using Encrypted 
 Data Bags to store your various tokens for Hab and Automate ([more on that 
 here](./ChefTestKitchenEncryptedDataBags.md).)
 1. Update your `default.rb` recipe and add the following:
     ```
-    include_recipe 'base-linux::attributes'
     include_recipe 'base-linux::compliance'
     ```
-1. Next, update your `Policyfile.rb` to point to GitHub to retrieve the Habitat
+1. Next, update `compliance.rb` and add the following:
+    ```
+    include_recipe 'os-hardening::default'
+    include_recipe 'audit::default'
+    ```
+1. Now, install the latest DevSec Linux Security Baseline profile onto your
+Automate server by following the steps here: 
+https://docs.chef.io/automate/profiles/#installing-profiles. Make sure to take
+note of the user that installed the profile, it will be the first part of
+the `identifier`, if you were logged in as `admin` at the time of installing
+the profile, the `identifier` string would be `admin/linux-baseline`. You'll
+need this for the next step.
+1. Create a directory in the cookbook root called `attributes` and create a
+file called `default.rb`, then add the following:
+    ```
+    default['audit']['reporter'] = 'chef-server-automate'
+    default['audit']['fetcher'] = 'chef-server'
+    default['audit']['profiles']['linux-baseline'] = {
+        'compliance': 'admin/linux-baseline'
+    }
+    default['audit']['waiver_file'] = "/opt/chef/waivers/waiver.yaml"
+    ```
+1. Next, update your `Policyfile.rb` to point to GitHub to retrieve the Audit
 and OS-Hardening cookbooks by adding the following lines:
     ```
-    cookbook 'habitat', github: 'chef-cookbooks/habitat', branch: 'master'
+    cookbook 'audit', github: 'chef-cookbooks/audit', branch: 'master'
     cookbook 'os-hardening', github: 'dev-sec/chef-os-hardening', branch: 'master'
     ```
     This will ensure that every time we build our policy, we're always pulling
     from the latest available, you can specify specific versions if you want to
     have more control over what you pull in. For this we're just going to pull
     in the latest on the `master` branch.
+1. Run `cookstyle` and fix any issues that you see.
 1. Finally, run `chef install` from the `base-linux` directory root, you should
 see output similar to this:
     ```
@@ -288,43 +290,62 @@ see output similar to this:
     Expanded run list: recipe[base-linux::default]
     Caching Cookbooks...
     Installing base-linux >= 0.0.0 from path
-    Installing habitat      2.2.3
+    Using      audit        9.5.0
     Using      os-hardening 4.0.0
 
-    Lockfile written to ../base-policies/base-linux/Policyfile.lock.json
-    Policy revision id: 6579b50dac92d4cc982c6779cb4c7780994dab5e26a55ddd24a4d9fbd21a96ca
+    Lockfile written to /Users/dbright/git/chef/chef-cft/ymir-policyfiles-example/base-linux/Policyfile.lock.json
+    Policy revision id: dfb45fb88e54fd8736a921be80720c54f3304912e09a4f5965ac530ed1b1d825
     ```
 1. Next, assuming the `install` was successful, run Test Kitchen using `kitchen
 converge`. Here's an example Test Kitchen YML that I use, I echo the IP of my
 local automate server as part of my provision command since I don't have it 
-setup in DNS, plus some other ssh stuff that sometimes gets in the way:
+setup in DNS, plus some other ssh stuff that sometimes gets in the way. Also,
+notice there are a few things I'm doing here, first, `client_rb` is being 
+populated with my Automate server info, a GUID and a node_name, this is because
+I want to be able to view my test node inside of Automate without registering
+it to the Chef Infra Server, if you set a GUID and keep it unique across your
+Test Kitchen fleet, then you will be able to see historical data in Automate as
+well. I'm also setting the reporter/fetcher attributes for the audit cookbook
+here to bypass the Chef Infra Server and report straight to Automate.:
     ```
     ---
-    driver:
-      name: docker
-
     provisioner:
-      name: chef_zero
+    name: chef_zero
+    deprecations_as_errors: true
+    chef_license: accept-no-persist
+    product_name: chef
+    product_version: 16
+    client_rb: 
+        data_collector.server_url: 'https://your.automate.url/data-collector/v0/'
+        data_collector.token: 'your-automate-token'
+        chef_guid: 'YOURRRRR-OWNN-UUUU-UUUU-IIIIIIDDDDDD'
+        node_name: 'tk-centos7-docker'
 
     platforms:
-      - name: centos-7
+    - name: centos-7
+        driver:
+        name: docker
         driver_config:
-          run_command: /usr/sbin/init
-          privileged: true
-          provision_command:
+        run_command: /usr/sbin/init
+        privileged: true
+        provision_command:
             - sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
             - systemctl enable sshd.service
+            - echo "192.168.1.2 automate your.automate.url" >> /etc/hosts
 
     suites:
-      - name: default
-        verifier:
-          inspec_tests:
-            - test/integration/default
+    - name: default
+        provisioner:
+        policyfile: Policyfile.rb
         attributes:
+        audit:
+            reporter: "chef-automate"
+            fetcher: "chef-automate"
     ```
 1. When Test Kitchen finishes converging, you should be able to logon to your
-Automate server and see the results of your Compliance scan, as well as validate
-your Application settings for the Habitat App (Effortless Audit in this case.)
+Automate server and see the results of your Test Kitchen converge in the 
+Infrastructure and Compliance tabs, in the example above they would show up as
+`tk-centos7-docker`.
 1. Finally, let's go ahead and publish this to the Chef Infra Server from the
 CLI. We're going to create our first policy group for this and call it 
 `unstable`. The reason for this is that we want to publish our base policy to 
@@ -358,7 +379,7 @@ testing immediately. To do this, from the policy root type:
 _We're not going to do anything else special with this base policy for now, but
 we'll come back to it later._
 
-## Step 4: Create a Deployable Policy
+## Step 4: Create Deployable Policies
 Here's where we start putting things together in more depth. Remember our list
 of policies we created back in Step 1.3? We're going to work from that list and 
 create our first deployable policy. We're also going to start with the lowest 
@@ -370,49 +391,34 @@ with we'll be working with:
 * **Policy Group**: `dev-sandbox`
 
 1. To start with, we'll create a new Policy File Cookbook just like we did for
-base-linux. So, within the directory structure you already set up, go ahead and
+`base-linux`. Within the directory structure you already set up, go ahead and
 create the `ymir-lb` policy: 
     ```
     chef generate cookbook ymir-lb
     ```
-    _Note when you create this, it will create a directory called `ymir-lb`, you
-    can either use that dir, or just change the name to `lb` to match the dir
-    structure I'm using in step 3._
 1. Before we do **anything** else, we're going to include our base policy in
 this new policy, and build and test it. Add the following line to your
 `Policyfile.rb` somewhere between `default_source` and `run_list`:
     ```
     include_policy 'base-linux', policy_name: 'base-linux', policy_group: 'unstable', server: 'https://<your chef server fqdn>/organizations/<your chef org>'
     ```
-    Next, edit the `run_list` to run `base-linux` first:
+1. Run `chef install`, and then open the file that gets created called 
+`Policyfile.lock.json` and look at the `"run_list"` line, it should look like
+this:
+    ```  
+    "run_list": [
+      "recipe[base-linux::default]",
+      "recipe[ymir-lb::default]"
+    ],
     ```
-    run_list 'base-linux::default', 'ymir-lb::default'
-    ```
-1. Run `chef install`.
+    That's because any `include_policy` gets put in the front of the `run_list`
+    of the current policy, and in the order in which the `include_policy` is in 
+    the `Policyfile.rb`.
 1. Now, just as we did with the base policy, let's create some new recipes:
     ```
     lb.rb
     ```
-    and a default attributes file in root
-    ```
-    attributes.rb
-    ```
-    _Note: `include_policy` merges a policy into the policy **inside** the 
-    current policy. There are a few important things to understand in regards to
-    how it all works:_
-
-    * **The `run_list` is automatically updated with the `include_policy`'s** 
-    **in the order in which they are included**. In the `ymir-lb` example,
-    even though the `Policyfile.rb`: `run_list` only has the `ymir-lb::default`
-    as it's sole entry, when you look at the generated `Policyfile.lock.json`
-    you will see this:
-        ```json
-        "name": "ymir-lb",
-        "run_list": [
-          "recipe[base-linux::default]",
-          "recipe[ymir-lb::default]"
-        ],
-        ```
+    and a default attributes file in `attributes/default.rb`
 1. In our `recipes/default.rb` let's go ahead and add 
 `include_recipe 'ymir-lb::lb'`, and in our `lb.rb` recipe, simply add this:
     ```
@@ -427,6 +433,7 @@ I leave that up to my `Policyfile.rb`.
     ```
     cookbook 'nginx', github: 'sous-chefs/nginx', branch: 'master'
     ```
+1. Run `cookstyle` and fix any issues that you see.
 1. Next, run Test Kitchen, and then publish the Policy to your Chef Infra 
 Server using:
     ```
@@ -460,13 +467,22 @@ rinse and repeat all of the following for each Policy Group if needed.
 you'll see in Automate, notice I applied a filter of `ymir*` for the 
 `policy_name` attribute, ignore the bad apple in there, I made a mistake and 
 didn't have time to wait to clean it out.
-    <img src="../images/ChefPolicyfileWorkflow/5-2a.png" width="800">
+    <img src="./images/ChefPolicyfileWorkflow/5-2a.png" width="800">
 1. In the compliance tab, you should also be able to filter by `name: ymir*` and
 `environment: dev-sandbox` to see the same nodes.
 
 ## Step 6: Make Changes to a Deployable Policy
-In this step, we're just going to make a simple change to a deployable policy
-to show how the policy is modified and pushed out.
+There are some additional requirements that need to be addressed as follows:
+* All nodes need to have their compliance run interval set to the following per
+`policy_group` that they belong to:
+    * 10 minutes for `dev-sandbox`
+    * 30 minutes for `dev-*`
+    * 60 minutes for everything else
+* All cache nodes need to have their `vm.overcommit_memory=1` setting updated
+in `/etc/sysctl.conf`.
+* All nodes should connect to the public Google NTP servers for time sync,
+regardless of `policy_group`.
+
 
 1. In the `ymir-lb` cookbook, edit the `attributes.rb` and add the 
 following lines:
@@ -497,7 +513,7 @@ logging into Automate and clicking on the node in the Infrastructure tab,
 you should see the Policy Revision, and it should match the ID you pushed to 
 the Chef Infra Server:
 
-    ![Revision ID](../images/ChefPolicyfileWorkflow/6-6a.png)
+    ![Revision ID](./images/ChefPolicyfileWorkflow/6-6a.png)
 
 ## Step 7: Make an Upstream (Base Policy) Change and then Update and Push Downstream (Deployable Policies)
 This is commonly referred to as the "Rebuild the World" scenario, and 
@@ -819,7 +835,7 @@ deployed, it's name is `test-policy`:
     as you see in the results, the Policy ID `818a653aea` is the same for all of
     them.
 1.  Here's a visual representation of what just happened:
-    <img src="../images/ChefPolicyfileWorkflow/push-diagram.png" width="800">
+    <img src="./images/ChefPolicyfileWorkflow/push-diagram.png" width="800">
 
 **Scenario 2**: You push a policy first to `unstable`, then `dev`, `qa`, `stage`
 and finally `prod`. This is an _updated_ policy that's already been deployed
@@ -883,7 +899,7 @@ and finally `prod`. This is an _updated_ policy that's already been deployed
     * prod:           9ddd7a9482
     ```
 1. Here's a visual representation:
-    <img src="../images/ChefPolicyfileWorkflow/push-archive-2.png" width="800">
+    <img src="./images/ChefPolicyfileWorkflow/push-archive-2.png" width="800">
 
 ## FAQ's
 

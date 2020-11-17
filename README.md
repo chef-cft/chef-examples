@@ -23,6 +23,7 @@ Note: USE AT YOUR OWN RISK!
 - [Role Cookbook Model Explained](./examples/RoleCookbookModel.md)
 - [HowTo bootstrap an Azure VM using an ARM template & Policyfiles](./examples/AzureArmChefClientBootstrap/README.md)
 - [HowTo create and test local Encrypted Data Bags using Test Kitchen](./examples/ChefTestKitchenEncryptedDataBags.md)
+- [Running Multiple Versions of Chef Workstation/DK from a Docker Container](./examples/docker-ops/README.md)
 
 ## InSpec
 

@@ -136,6 +136,10 @@ any time.
     * Chef Client 14.14.29 -> `docker pull chef/chefdk:3.12.10`
     * Chef Client 15.8.23 -> `docker pull chef/chefworkstation:0.16.31`
     * Chef Client 16.6.14 -> `docker pull chef/chefworkstation:20.10.168` (also stable as of this doc)
-1. The Docker image allows you to run Test Kitchen using the `kitche-docker` 
+1. The Docker image allows you to run Test Kitchen using the `kitchen-docker` 
 driver from within the Docker image itself, it maps to the host Docker socket.
 You can change the driver, however I haven't tested this as of yet.
+
+### TODO
+* Write Windows Powershell examples
+* Test with other drivers

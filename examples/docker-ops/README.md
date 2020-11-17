@@ -60,26 +60,35 @@ corrections or functionality :)
       local args=("$@")
       func_chef "$image" "${args[@]}"
     }
+    chefdk_1.5 () { chef_12 "$@"; }
+
     chef_13 () {
       image="chef/chefdk:2.5.3"
       local args=("$@")
       func_chef "$image" "${args[@]}"
     }
+    chefdk_2.5.3 () { chef_13 "$@"; }
+
     chef_14 () {
       image="chef/chefdk:3.13.6"
       local args=("$@")
       func_chef "$image" "${args[@]}"
     }
+    chefdk_3.13.6 () { chef_14 "$@"; }
+
     chef_15 () {
       image="chef/chefworkstation:0.16.31"
       local args=("$@")
       func_chef "$image" "${args[@]}"
     }
+    chefws_0.16.31 () { chef_15 "$@"; }
+
     chef_16 () {
       image="chef/chefworkstation:stable"
       local args=("$@")
       func_chef "$image" "${args[@]}"
     }
+    chefws_stable () { chef_16 "$@"; }
     ```
 1. Source the profile, on my Mac, using zshrc, I type `source ~/.zshrc`
 1. Run commands like this `chef_<version> [chef|knife|kitchen] arg1 arg2 etc....`:
@@ -107,6 +116,11 @@ corrections or functionality :)
     Successfully installed kitchen-docker-2.10.0
     2 gems installed
     Test Kitchen version 2.7.2
+1. You can also use the DK or Workstation version when running the commands, 
+In the example above, the `chef_<ver>` are mapped to the Chef Infra Client that
+ships with the DK/WS image, however you can reference the alias for the DK/WS
+version using the alias that's set directly below it - for `chef_15` it is 
+`chefws_0.16.31` for example.
 1. You will most likely need to tweak the mappings of the Docker run command (
   the ones that start with `-v` to ensure all of the right folders/files are
   being loaded into the Docker container. Once you do this, the commands should

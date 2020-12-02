@@ -1,15 +1,25 @@
-# Policyfile In Action
-
+Policyfile In Action
+====================
 ## The Policyfile Explained (further)
 _This is not exhaustive, just in addition to the information already located
 [in the Chef Docs about Policyfiles](https://docs.chef.io/policyfile/)._
 
-### **Part I - What is a Policyfile?**
+## Table of Contents
+
+  * [Part I - What is a Policyfile?](#Part-I---What-is-a-Policyfile?)
+  * [Part II - How is a Policyfile Created?](#Part-II---How-is-a-Policyfile-Created?)
+    * [Step 1 - Create the `Policyfile.rb` file](#Step-1---Create-the-Policyfile.rb-file)
+    * [Step 2 - Generate the `Policyfile.lock.json` file](#Step-2---Generate-the-`Policyfile.lock.json`-file)
+    * [Step 3 - Generate a Policyfile Archive](#Step-3---Generate-a-Policyfile-Archive)
+  * [Part III - How is a Policyfile Tested, Stored and Deployed?](#Part-III---How-is-a-Policyfile-Tested,-Stored-and-Deployed?)
+    * [Step 1 - Testing Policyfiles](#Step-1---Testing-Policyfiles)
+      * [Cookbook Unit Testing (optional)](#Cookbook-Unit-Testing)
+
+### Part I - What is a Policyfile?
 Policyfile is often confused with a single file or as an entirely new way of 
 "doing" Chef. In reality, _it's less about how you write cookbooks, and more 
 about how you organize and deploy them_.
 * Official Chef Documentation states - 
-
   > "A Policyfile is an optional way to manage role, environment, and community cookbook data with a single document that is uploaded to the Chef Infra Server. The file is associated with a group of nodes, cookbooks, and settings. When these nodes perform a Chef Infra Client run, they utilize recipes specified in the Policyfile run-list."
 * The description above applies to only one part of the components that make up
 a "Policyfile", referred to as the Policyfile Artifact. However, there is a 
@@ -25,15 +35,14 @@ there are **two types of Policyfile Artifacts**, they are -
     * Note: _The preferred way to create, push and store Policyfiles because it
     creates an artifact that can be referenced - great for pipelines and 
     backups._
-### **Part II - How is a Policyfile Created?**
-A Policyfile can be created in two ways, either way is fine it really just
+### Part II - How is a Policyfile Created?
+#### Step 1 - Create the `Policyfile.rb` file
+A `Policyfile.rb` can be created in two ways, either way is fine it really just
 depends on the scenario.
-#### **Step 1** - Generate the `Policyfile.rb`
 * _**First way**:_ You can use the Chef CLI command  `chef generate cookbook 
 my-cookbook` to generate an empty **Policyfile Cookbook**. 
   
-  More info:
-  
+  \- _More info:_
   * A "Policyfile Cookbook" is the default type of Chef Cookbook. It
   consists of a complete cookbook structure, as well as a `Policyfile.rb` in 
   the root of the cookbook. The `Policyfile.rb` is auto-populated with the 
@@ -46,24 +55,23 @@ my-cookbook` to generate an empty **Policyfile Cookbook**.
   * Note: _Useful when creating a new cookbook from scratch_
 * _**Second way** (optional):_ Simply create a **`Policyfile.rb`** file, then
 populate it with all of the required info. It can be stored anywhere, as long as
-it exists on a workstation that has access to the defined cookbook sources, 
+it exists on a workstation that has access to the defined cookbook sources,
 either local or remote.
-
-  More Info:
-
+  
+  \- _More Info:_
   * A `Policyfile.rb` can exist either with a cookbook, or without a cookbook - 
   it is the mechanism used to pull together all required cookbooks and their 
   dependencies (more about that in the next section) into a single location and 
   when it's job is done, it then creates a file named `Policyfile.lock.json`.
   * Note: _Useful when updating an existing cookbook to use Policyfile_ 
-#### **Step 2** - Create the **`Policyfile.lock.json`** file
+#### Step 2 - Generate the `Policyfile.lock.json` file
 1. In the same directory as your `Policyfile.rb`, run the command `chef install`
 . This will generate a new file in the same directory called 
 `Policyfile.lock.json`.
-#### **Step 3** - Create a **Policyfile Archive** (optional, but strongly recommended)
+#### Step 3 - Generate a Policyfile Archive
 1. Continuing from Step 2, after you have created the `Policyfile.lock.json`, 
-you can create a file that contains everything required to deploy to a node by
-running the following command from the same directory as the lock file -
+you can create a Policyfile Archive by running the following command from the 
+same directory as the lock file -
     ```shell
     chef export Policyfile.lock.json /path/to/output/ -a
     ```
@@ -71,8 +79,8 @@ running the following command from the same directory as the lock file -
     the file, you can then use it later either by pushing to the Chef Infra 
     Server, or using Chef Zero.
 
-### **Part III - How is a Policyfile Tested, Stored and Deployed?**
-#### **Step 1** - Testing Policyfiles
+### Part III - How is a Policyfile Tested, Stored and Deployed?
+#### Step 1 - Testing Policyfiles
 Policyfiles are very simple in their complexity, and other than syntax/linting
 issues that can be caught by running `cookstyle` against the Policy, there's not
 really much "testing" of Policyfiles to be done. However, Policyfiles tie 
@@ -81,7 +89,7 @@ that should definitely be tested using Test Kitchen (to validate the converge
 happens without errors, and as expected), and Inspec (to validate the expected
 results of the configuration application.) Taking all of that into 
 consideration, here is a list of how Policyfiles should be tested:
-1. **Cookbook Unit Testing (optional)** - It's assumed that cookbooks that are 
+1. **Cookbook Unit Testing (optional)**<a id="Cookbook-Unit-Testing"></a> - It's assumed that cookbooks that are 
 included ina Policyfile have already been unit tested using ChefSpec (not always 
 necessary), you _can_ unit test the Policyfile cookbook if you want, but
 typically this type of testing is reserved for very complex cookbooks and
@@ -167,7 +175,7 @@ the sake of listing the reasons why this is true.
 
 #### **Step 3** - Deploying Policyfiles
 
-### **Part IV - How is the Policyfile used, and what does it do?**
+### Part IV - How is the Policyfile used, and what does it do?
 * The `Policyfile.rb` is used in three ways:
   * When running the 
   [`chef install`](https://docs.chef.io/policyfile/#chef-install) 

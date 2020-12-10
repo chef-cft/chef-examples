@@ -1,4 +1,4 @@
-image: "chef/chefdk"
+image: "chef/chefworkstation"
 
 services:
   - docker:dind

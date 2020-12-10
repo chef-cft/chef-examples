@@ -1,7 +1,11 @@
-image: "chef/chefdk"
+image: "chef/chefworkstation"
 
 services:
   - docker:dind
+
+# Shared variables which we'll attach to jobs
+.shared_variables: &shared_variables
+  CHEF_LICENSE: accept
 
 before_script:
   - echo $(admin-pem) | base64 -d > ~/.chef/admin.pem
@@ -18,16 +22,22 @@ cookstyle:
   stage: test
   script:
     - chef exec cookstyle .
+  variables:
+    <<: *shared_variables
 
 chefspec:
   stage: test
   script:
     - chef exec rspec .
+  variables:
+    <<: *shared_variables
 
-chefspec:
+test_kitchen:
   stage: test
   script:
     - chef exec kitchen test
+  variables:
+    <<: *shared_variables
 
 create_artifact:
   stage: build
@@ -36,6 +46,8 @@ create_artifact:
       - Policyfile.lock.json
   script:
     - chef install
+  variables:
+    <<: *shared_variables
 
 publish_artifact:
   stage: publish
@@ -44,6 +56,8 @@ publish_artifact:
       - Policyfile.lock.json
   script:
     - chef push dev
+  variables:
+    <<: *shared_variables
 
 promote_stg:
   stage: promote_stg
@@ -52,6 +66,8 @@ promote_stg:
       - Policyfile.lock.json
   script:
     - chef push stg
+  variables:
+    <<: *shared_variables
   when: manual
 
 promote_prod:
@@ -61,4 +77,6 @@ promote_prod:
       - Policyfile.lock.json
   script:
     - chef push prod
+  variables:
+    <<: *shared_variables
   when: manual

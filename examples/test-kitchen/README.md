@@ -99,7 +99,7 @@ export X_DEPT=Sales
 
 ## Docker
 
-There are two different `kitchen` drivers that can be used with Docker, `docker` and `dokken`.  `dokken` ships with the ChefDK.  `docker` can be installed with a simple `chef gem install kitchen-docker`.  Each of these drivers has advantages and disadvantages depending on what is being developed and what needs to be tested.
+There are two different `kitchen` drivers that can be used with Docker, `docker` and `dokken`.  `dokken` ships with the Chef Workstation.  `docker` can be installed with a simple `chef gem install kitchen-docker`. Each of these drivers has advantages and disadvantages depending on what is being developed and what needs to be tested.
 
 This [blog post](https://blog.chef.io/2018/03/06/kitchen-docker-or-kitchen-dokken-using-test-kitchen-and-docker-for-fast-cookbook-testing/) does an excellent job of explaining the differences between the two drivers, and the reasons you might want to use one over the other.
 

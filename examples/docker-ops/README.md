@@ -12,7 +12,7 @@ with your existing Chef code.
 
 ### Assumptions
 
-* Are using Mac OSX or Linux (Windows Powershell coming soon)
+* Are using macOS or Linux (Windows Powershell coming soon)
 * Have an understanding of how to use the `bash_profile` standard, more here:
 https://stackoverflow.com/questions/8967843/how-do-i-create-a-bash-alias
 * Have Docker installed and running and are able to spin up containers and

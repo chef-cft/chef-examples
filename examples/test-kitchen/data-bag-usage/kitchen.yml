@@ -1,0 +1,35 @@
+---
+driver:
+  name: dokken
+
+provisioner:
+  name: dokken
+
+transport:
+  name: dokken
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: ubuntu-20.04
+    driver:
+      image: dokken/ubuntu-20.04
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        - RUN /usr/bin/apt-get update
+
+suites:
+  - name: default
+    verifier:
+      inspec_tests:
+        - test/integration/default
+  - name: alt-databag-location
+    verifier:
+      inspec_tests:
+        - test/integration/alt_test
+    provisioner:
+      data_bags_path: test/integration/alt_location
+    attributes:
+      kitchen_suite_action: alt-data-bag-location
+

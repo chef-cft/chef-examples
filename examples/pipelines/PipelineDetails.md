@@ -37,7 +37,7 @@ Notes:
 
 * Legacy Berks pattern
   * ADO - Chef publishes an extension for ADO that simplifies managing the Chef server info and secrets. Our examples use these extensions whenever possible. More info [here](https://github.com/chef-partners/azuredevops-chef/wiki/getting-started).
-  * GitLab-CI - These examples leverage the `chef/chefdk` docker image to reduce the effort needed to set up the Chef kit. We also need to set up two variables (`admin-pem` and `knife-rb`) in `Settings > CI/CD > Variables` in each project.
+  * GitLab-CI - These examples leverage the `chef/chefworkstation` docker image to reduce the effort needed to set up the Chef kit. We also need to set up two variables (`admin-pem` and `knife-rb`) in `Settings > CI/CD > Variables` in each project.
   * Jenkins - Since Jenkins vary soo much, these example assume that ChefDK or Chef Workstation are installed on the Jenkins server.
 * Policyfile pattern
   * ADO - We continue to use the Chef extensions for several tasks; however, the extension doesn't support policyfiles. For the steps that interact directly with the policyfile, we call the `chef` command directly. We also fetch the `admin.pem` and `knife.rb` from Azure Key Vault.
@@ -45,7 +45,7 @@ Notes:
   * Jenkins - Same config as Berks pattern
 * Modern Effortless pattern
   * ADO - We'll use the Chef Server extensions to test the cookbook. Chef also has an extension for Habitat which we'll use for several tasks. More info [here](https://github.com/chef-partners/azuredevops-habitat/wiki/getting-started).
-  * GitLab-CI - We'll use the `chef/chefdk` image here as well. We'll also install Habitat at runtime. in addition to the variables above, we'll need to configure  thee more: `sig`, `key`, `cli`. These are for the Habitat signing keys along with the `cli.toml` that provide origin and token info for working with BLDR.
+  * GitLab-CI - We'll use the `chef/chefworkstation` image here as well which also includes Habitat binaries. In addition to the variables above, we'll need to configure three more: `sig`, `key`, `cli`. These are for the Habitat signing keys along with the `cli.toml` that provide origin and token info for working with BLDR.
   * Jenkins - Along with needing ChefDK/Chef Workstation, Habitat will need to be installed. You'll also need the additional variables for Habitat.
 
 ### Data bags, Environments, and Roles

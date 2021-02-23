@@ -1,7 +1,11 @@
-image: "chef/chefdk"
+image: "chef/chefworkstation"
 
 services:
   - docker:dind
+
+# Shared variables which we'll attach to jobs
+.shared_variables: &shared_variables
+  CHEF_LICENSE: accept
 
 before_script:
   - echo $(admin-pem) | base64 -d > ~/.chef/admin.pem
@@ -15,11 +19,14 @@ lint:
   stage: test
   script:
     - inspec check .
+  variables:
+    <<: *shared_variables
 
 publish_artifact:
   stage: publish
-
   script:
     - inspec compliance login $AUTOMATE_SERVER_NAME --insecure --user=$AUTOMATE_USER --ent=$AUTOMATE_ENTERPRISE --dctoken=$DC_TOKEN
     - inspec compliance upload . --overwrite
     - inspec compliance logout
+  variables:
+    <<: *shared_variables

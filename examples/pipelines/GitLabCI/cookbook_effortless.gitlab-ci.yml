@@ -1,13 +1,16 @@
-image: "chef/chefdk"
+image: "chef/chefworkstation"
 
 services:
   - docker:dind
 
+# Shared variables which we'll attach to jobs
+.shared_variables: &shared_variables
+  HAB_LICENSE: accept
+  CHEF_LICENSE: accept
+
 before_script:
   - apt-get update
   - apt-get install -y curl wget
-  - curl https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh | bash
-  - hab license accept
   - echo $sig | base64 -d > /hab/cache/keys/origin-20191217002439.pub
   - echo $key | base64 -d > /hab/cache/keys/origin-20191217002439.sig.key
   - mkdir - p /hab/etc
@@ -24,16 +27,22 @@ cookstyle:
   stage: test
   script:
     - chef exec cookstyle .
+  variables:
+    <<: *shared_variables
 
 chefspec:
   stage: test
   script:
     - chef exec rspec .
+  variables:
+    <<: *shared_variables
 
-chefspec:
+kitchen_test:
   stage: test
   script:
     - chef exec kitchen test
+  variables:
+    <<: *shared_variables
 
 create_artifact:
   stage: build
@@ -42,6 +51,8 @@ create_artifact:
       - results/
   script:
     - hab pkg build habitat/.
+  variables:
+    <<: *shared_variables
 
 publish_artifact:
   stage: publish
@@ -51,6 +62,8 @@ publish_artifact:
   script:
     - source results/last_build.env
     - hab pkg upload results/$pkg_artifact
+  variables:
+    <<: *shared_variables
 
 promote_stg:
   stage: promote_stg
@@ -60,6 +73,8 @@ promote_stg:
   script:
     - source results/last_build.env
     - hab pkg promote $pkg_ident stg
+  variables:
+    <<: *shared_variables
   when: manual
 
 promote_prod:
@@ -70,4 +85,6 @@ promote_prod:
   script:
     - source results/last_build.env
     - hab pkg promote $pkg_ident prod
+  variables:
+    <<: *shared_variables
   when: manual

@@ -1,7 +1,11 @@
-image: "chef/chefdk"
+image: "chef/chefworkstation"
 
 services:
   - docker:dind
+
+# Shared variables which we'll attach to jobs
+.shared_variables: &shared_variables
+  CHEF_LICENSE: accept
 
 before_script:
   - echo $(admin-pem) | base64 -d > ~/.chef/admin.pem
@@ -16,19 +20,27 @@ cookstyle:
   stage: test
   script:
     - chef exec cookstyle .
+  variables:
+    <<: *shared_variables
 
 chefspec:
   stage: test
   script:
     - chef exec rspec .
+  variables:
+    <<: *shared_variables
 
-chefspec:
+kitchen_test:
   stage: test
   script:
     - chef exec kitchen test
+  variables:
+    <<: *shared_variables
 
 publish:
   stage: publish
   script:
     - berks install
     - berks upload --ssl-verify=false
+  variables:
+    <<: *shared_variables

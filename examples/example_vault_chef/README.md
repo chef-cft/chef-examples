@@ -1,6 +1,6 @@
 # example_vault_chef
 
-Example cookbook using [HashiCorp Vault](https://www.vaultproject.io/) to store secrets.
+Example cookbook using [Vault](https://www.vaultproject.io/) to store secrets.
 
 ## References
 
@@ -81,5 +81,13 @@ rake local_vault_start   # Create a local vault instance running on port 8200
     policies             ["chef-role-token" "default"]
     ```
 
-* Note the `token` output from the configuration, in the above example it is `s.c01xCqxnKcvxOcDghhHmdkkx`.  Save this token in the `test/integration/data_bags/approle_tokens/default.json` data_bag file.
+* Note the `token` output from the configuration, in the above example it is `s.c01xCqxnKcvxOcDghhHmdkkx`.
+    * Save this token in the `test/integration/data_bags/approle_tokens/default.json` data_bag file.
+    * Save this token in the encrypted data bag `encrypted_data_bag_keys`:
+        ```sh
+        # cd to the test/integration directory so that it finds the data_bags path
+        cd test/integration
+        EDITOR=vi knife data bag edit --local-mode encrypted_data_bag_keys default --secret-file ../../files/mysecretfile
+        cd ../../
+        ```
 * Run `kitchen test`

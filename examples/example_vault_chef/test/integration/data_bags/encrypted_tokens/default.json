@@ -1,0 +1,10 @@
+{
+  "id": "default",
+  "chef-role": {
+    "encrypted_data": "8w9mRT6OOnaYL9Dl7zpyDVmt33VF6M+3U5rHGf7+EO0eyDsPql5XfqhLhbAU\nzhRnuYpiWtV8Mw==\n",
+    "iv": "xzRKxzhmxCuPEAMR\n",
+    "auth_tag": "Ine2p2LHZGf/iNu2aRtHRA==\n",
+    "version": 3,
+    "cipher": "aes-256-gcm"
+  }
+}

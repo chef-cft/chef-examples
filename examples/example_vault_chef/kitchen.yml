@@ -4,6 +4,8 @@ driver:
 
 provisioner:
   name: dokken
+  # Uncomment this to read the secret from local `mysecretfile`
+  # encrypted_data_bag_secret_key_path: mysecretfile
 
 transport:
   name: dokken
@@ -27,3 +29,19 @@ suites:
       inspec_tests:
         - test/integration/default
     attributes:
+      example_vault_chef:
+        vault_token: data-bag
+  - name: encrypted-data-bag-from-bag
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+      example_vault_chef:
+        vault_token: encrypted-data-bag-from-bag
+  - name: encrypted-data-bag-from-file
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+      example_vault_chef:
+        vault_token: encrypted-data-bag-from-file

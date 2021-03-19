@@ -1,0 +1,47 @@
+---
+driver:
+  name: dokken
+
+provisioner:
+  name: dokken
+  # Uncomment this to read the secret from local `mysecretfile`
+  # encrypted_data_bag_secret_key_path: mysecretfile
+
+transport:
+  name: dokken
+
+verifier:
+  name: inspec
+
+platforms:
+  # @see https://github.com/chef-cookbooks/testing_examples/blob/master/kitchen.dokken.yml
+  # @see https://hub.docker.com/u/dokken
+  - name: ubuntu-20.04
+    driver:
+      image: dokken/ubuntu-20.04
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        - RUN /usr/bin/apt-get update
+
+suites:
+  - name: default
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+      example_vault_chef:
+        vault_token: data-bag
+  - name: encrypted-data-bag-from-bag
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+      example_vault_chef:
+        vault_token: encrypted-data-bag-from-bag
+  - name: encrypted-data-bag-from-file
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+      example_vault_chef:
+        vault_token: encrypted-data-bag-from-file

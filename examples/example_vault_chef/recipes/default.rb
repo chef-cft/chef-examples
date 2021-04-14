@@ -15,6 +15,10 @@ vault_token = case node['example_vault_chef']['vault_token']
                 #  Vault secret token from the `encrypted_tokens` data_bag.
                 key_content = data_bag_item('encrypted_data_bag_keys', 'default')['key'].strip()
                 data_bag_item('encrypted_tokens', 'default', key_content)["#{node['example_vault_chef']['vault_approle']}"]['token']
+              when 'secret-from-api'
+                # Fetches the token/secretid to read from Vault via external API
+                api_data = api_json_fetch(node['example_vault_chef']['api_secret_server'].to_s)
+                api_data['chef-role']['token']
               when 'encrypted-data-bag-from-file'
                 # Fetches the encrypted data_bag secret key from a local file and then uses that encryption key to read the
                 #  Vault secret token from the `encrypted_tokens` data_bag.
@@ -33,10 +37,10 @@ vault_token = case node['example_vault_chef']['vault_token']
 
 # Use the get_hashi_vault_object helper from secrets_management to fetch secret data.
 vault_data = get_hashi_vault_object(
-node['example_vault_chef']['vault_path'],
-node['example_vault_chef']['vault_server'],
-vault_token,
-node['example_vault_chef']['vault_approle']
+  node['example_vault_chef']['vault_path'],
+  node['example_vault_chef']['vault_server'],
+  vault_token,
+  node['example_vault_chef']['vault_approle']
 ).data[:data]
 
 # Log the secret contents to show what the contents look like as a string

@@ -1,5 +1,6 @@
 local.md
 *.hcl
+api-key-serve-go
 
 .vagrant
 *~

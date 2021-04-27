@@ -25,6 +25,7 @@ Note: USE AT YOUR OWN RISK!
 - [HowTo create and test local Encrypted Data Bags using Test Kitchen](./examples/ChefTestKitchenEncryptedDataBags.md)
 - [Running Multiple Versions of Chef Workstation/DK from a Docker Container](./examples/docker-ops/README.md)
 - [Using HashiCorp Vault with Chef Infra Client cookbooks](./examples/example_vault_chef/README.md)
+- [Chef YAML recipes overview](./examples/ChefYAMLRecipes.md)
 
 ## InSpec
 

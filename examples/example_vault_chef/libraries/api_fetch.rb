@@ -18,10 +18,10 @@ module ExampleVaultChef
       http.use_ssl = true if http.port.to_s =~ /443/
       req = http.get(url)
       JSON.parse(req.body)
-    # rescue => err
-    #   puts
-    #   puts "There was an error sending GET to #{path}"
-    #   puts err
+      # rescue => err
+      #   puts
+      #   puts "There was an error sending GET to #{path}"
+      #   puts err
     end
   end
 end

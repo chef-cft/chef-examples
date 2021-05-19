@@ -84,11 +84,14 @@ module ChefMagic
       my_vault
     end
 
-    def get_hashi_vault_object(vault_path, vault_address, vault_token, vault_role = nil)
+    def get_hashi_vault_object(vault_path, vault_address, vault_token, vault_role = nil, vault_namespace = nil)
       # Need to set the vault address
       Vault.address = vault_address
       # Authenticate with the token
       Vault.token = vault_token
+
+      # Add namespace if passed (default is nil)
+      Vault.namespace = vault_namespace
 
       Vault.ssl_verify = false
 

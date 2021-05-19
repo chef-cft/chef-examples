@@ -29,6 +29,15 @@ suites:
     attributes:
       example_vault_chef:
         vault_token: data-bag
+        run_examples: true
+  - name: token-file
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+      example_vault_chef:
+        vault_token: token-file
+        run_examples: true
   - name: secret-from-api
     verifier:
       inspec_tests:
@@ -36,6 +45,7 @@ suites:
     attributes:
       example_vault_chef:
         vault_token: secret-from-api
+        run_examples: true
   - name: encrypted-data-bag-from-bag
     verifier:
       inspec_tests:
@@ -43,6 +53,7 @@ suites:
     attributes:
       example_vault_chef:
         vault_token: encrypted-data-bag-from-bag
+        run_examples: true
     provisioner:
       encrypted_data_bag_secret_key_path: test/integration/encrypted_data_bag_secret_key
   - name: encrypted-data-bag-from-file
@@ -52,3 +63,4 @@ suites:
     attributes:
       example_vault_chef:
         vault_token: encrypted-data-bag-from-file
+        run_examples: true

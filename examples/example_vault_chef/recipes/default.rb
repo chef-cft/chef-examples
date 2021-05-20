@@ -2,7 +2,6 @@
 # Cookbook:: example_vault_chef
 # Recipe:: default
 #
-# Copyright:: 2021, Collin McNeese, All Rights Reserved.
 
 vault_token = case node['example_vault_chef']['vault_token']
               when 'data-bag'
@@ -10,6 +9,19 @@ vault_token = case node['example_vault_chef']['vault_token']
                 #  In a real environment this should be an encrypted data bag or some other secure
                 #  location for obtaining this data.
                 data_bag_item('approle_tokens', 'default')["#{node['example_vault_chef']['vault_approle']}"]['token']
+              when 'token-file'
+                # Fetches the token/secretid from a file on the filesystem of the server
+                # Mock up creating the token_file for test-kitchen only
+                file node['example_vault_chef']['vault_token_file'] do
+                  content node['example_vault_chef']['vault_token_file_content'].to_s
+                  owner 'root'
+                  group 'root'
+                  mode '0600'
+                  only_if { ENV['TEST_KITCHEN'] }
+                end.run_action(:create)
+
+                # Reads the first line of a file
+                File.read(node['example_vault_chef']['vault_token_file']).split()[0] if File.exist?(node['example_vault_chef']['vault_token_file'])
               when 'encrypted-data-bag-from-bag'
                 # Fetches the encrypted data_bag secret key from a data_bag and then uses that encryption key to read the
                 #  Vault secret token from the `encrypted_tokens` data_bag.
@@ -36,26 +48,12 @@ vault_token = case node['example_vault_chef']['vault_token']
               end
 
 # Use the get_hashi_vault_object helper from secrets_management to fetch secret data.
-vault_data = get_hashi_vault_object(
+node.run_state['vault_data'] = get_hashi_vault_object(
   node['example_vault_chef']['vault_path'],
   node['example_vault_chef']['vault_server'],
   vault_token,
-  node['example_vault_chef']['vault_approle']
+  node['example_vault_chef']['vault_approle'],
+  node['example_vault_chef']['vault_namespace']
 ).data[:data]
 
-# Log the secret contents to show what the contents look like as a string
-log vault_data.to_s do
-  level :info
-end
-
-# Use the secret data obtained from Vault for populating our configuration file
-file '/tmp/secretfile' do
-  content <<~SECFILE
-    key1 value: #{vault_data[:key1]}
-    key2 value: #{vault_data[:key2]}
-  SECFILE
-  owner 'root'
-  group 'root'
-  mode '0755'
-  action :create
-end
+include_recipe 'example_vault_chef::example' if node['example_vault_chef']['run_examples']

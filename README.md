@@ -16,6 +16,7 @@ Note: USE AT YOUR OWN RISK!
 - [Ruby Automate API script for reporting node counts by Chef Infra Servers, organizations, and status](./examples/a2-api/README.md#node_countrb)
 - [Ruby Automate API script for exporting latest audits with filtering](./examples/a2-api/README.md#audit_reportsrb)
 - [Ruby Nodes and Event Report, Accepting Values At The Command Line](./examples/a2-api/nodes_and_events_reporter.rb)
+- [Setting Up SAML Auth with Oracle Identity Cloud Service](./examples/A2SamlWithOracleIdentityCloud.md)
 
 ## Infra
 

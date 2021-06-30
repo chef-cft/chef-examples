@@ -63,7 +63,7 @@ end
 YAML recipe is ERB template, like other tepmlates in Chef, so you can use all its features:
 
 ```
-resource:
+resources:
 <%- if node['platform_family'] == 'debian' %>
 - name: package[apache2]
 <%- else %>

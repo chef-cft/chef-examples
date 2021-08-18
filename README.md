@@ -27,6 +27,7 @@ Note: USE AT YOUR OWN RISK!
 - [Running Multiple Versions of Chef Workstation/DK from a Docker Container](./examples/docker-ops/README.md)
 - [Using HashiCorp Vault with Chef Infra Client cookbooks](./examples/example_vault_chef/README.md)
 - [Chef YAML recipes overview](./examples/ChefYAMLRecipes.md)
+- [Creating a Bootstrap-Only Key for Chef Infra Server](./examples/chef-infra-bootstrap-only-key.md)
 
 ## InSpec
 

@@ -1,0 +1,90 @@
+{
+  "revision_id": "2652094d74f1850001eb1c89ae43a73f5c65ff6d1d65d7e7026648bce5cbeaff",
+  "name": "dependendent_cookbook",
+  "run_list": [
+    "recipe[base_cookbook::default]",
+    "recipe[dependendent_cookbook::default]"
+  ],
+  "included_policy_locks": [
+    {
+      "name": "base_cookbook",
+      "revision_id": "ec6ae3de8c4a7e00f63f497d2785e3d57ee7786f21276513b6e5856f3a99bec1",
+      "source_options": {
+        "path": "../base_cookbook/Policyfile.lock.json"
+      }
+    }
+  ],
+  "cookbook_locks": {
+    "base_cookbook": {
+      "version": "0.1.0",
+      "identifier": "63666065f180c09487330303edf333c071cc3adb",
+      "dotted_decimal_identifier": "27978586907574464.41806949716848115.56901635947227",
+      "source": "../base_cookbook",
+      "cache_key": null,
+      "scm_info": {
+        "scm": "git",
+        "remote": null,
+        "revision": "66bfa4b54b10271651f62bfe0c6e1c7422371f87",
+        "working_tree_clean": true,
+        "published": true,
+        "synchronized_remote_branches": [
+          "origin/HEAD -> origin/main",
+          "origin/main"
+        ]
+      },
+      "source_options": {
+        "path": "../base_cookbook"
+      }
+    },
+    "dependendent_cookbook": {
+      "version": "0.1.0",
+      "identifier": "6e15f55fb2ad7d58128e7d066d254c735a16a74a",
+      "dotted_decimal_identifier": "30986391054888317.24790201142766885.84058316384074",
+      "source": ".",
+      "cache_key": null,
+      "scm_info": {
+        "scm": "git",
+        "remote": null,
+        "revision": "66bfa4b54b10271651f62bfe0c6e1c7422371f87",
+        "working_tree_clean": true,
+        "published": true,
+        "synchronized_remote_branches": [
+          "origin/HEAD -> origin/main",
+          "origin/main"
+        ]
+      },
+      "source_options": {
+        "path": "."
+      }
+    }
+  },
+  "default_attributes": {
+
+  },
+  "override_attributes": {
+
+  },
+  "solution_dependencies": {
+    "Policyfile": [
+      [
+        "base_cookbook",
+        ">= 0.0.0"
+      ],
+      [
+        "dependendent_cookbook",
+        ">= 0.0.0"
+      ]
+    ],
+    "dependencies": {
+      "base_cookbook (0.1.0)": [
+
+      ],
+      "dependendent_cookbook (0.1.0)": [
+        [
+          "base_cookbook",
+          ">= 0.0.0"
+        ]
+      ]
+    }
+  }
+}

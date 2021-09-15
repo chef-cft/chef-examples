@@ -6,17 +6,17 @@ Note: USE AT YOUR OWN RISK!
 
 ## Automate
 
-- [Setting Up SAML Auth in Automate with Okta](./examples/A2SamlWithOkta.md)
 - [Creating a Cookbook Pipeline Using Azure DevOps](./examples/AzureDevOpsCookbookPipeline.md)
 - [Set up Automate + Chef Infra Server to use RDS Aurora Postgres + AWS Elastisearch Service Backends](./examples/a2-aws-backends/a2-aws-backends.md)
 - [Setup Automate with Let's Encrypt SSL Cert](./examples/A2WithLetsEncryptSSLCert.md)
-- [Automate SAML with AzureAD](./examples/A2SamlWithAzureAD.md)
+- [SAML - Setting Up SAML Auth in Automate with Okta](./examples/A2SamlWithOkta.md)
+- [SAML - Automate SAML with AzureAD](./examples/A2SamlWithAzureAD.md)
+- [SAML - Setting Up SAML Auth with Oracle Identity Cloud Service](./examples/A2SamlWithOracleIdentityCloud.md)
 - [Grant Access to Applications Dashboard](./examples/A2GrantAppDashboardAccess.md)
 - [Ruby Automate API script for reporting last node checkins](./examples/a2-api/README.md#checkinsrb)
 - [Ruby Automate API script for reporting node counts by Chef Infra Servers, organizations, and status](./examples/a2-api/README.md#node_countrb)
 - [Ruby Automate API script for exporting latest audits with filtering](./examples/a2-api/README.md#audit_reportsrb)
 - [Ruby Nodes and Event Report, Accepting Values At The Command Line](./examples/a2-api/nodes_and_events_reporter.rb)
-- [Setting Up SAML Auth with Oracle Identity Cloud Service](./examples/A2SamlWithOracleIdentityCloud.md)
 
 ## Infra
 

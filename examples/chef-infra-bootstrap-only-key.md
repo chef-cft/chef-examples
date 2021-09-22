@@ -24,7 +24,7 @@ This is intended for reference only and should be validated and tested within a 
 1. Create a new group which will have bootstrap-only permissions that we will adjust assignments for.  In this example, this group will be called `bootstrap`
 
     ```sh
-    knife create group bootstrap
+    knife group create bootstrap
     ```
 
 2. Apply explicit permissions to the `bootstrap` group to allow it to create new clients and
@@ -39,7 +39,7 @@ nodes but not update anything which already exists.  Below are examples which co
 key for the client once it gets created.
 
     ```sh
-    knife create client bootstrapclient
+    knife client create bootstrapclient
     ```
 
     ```json

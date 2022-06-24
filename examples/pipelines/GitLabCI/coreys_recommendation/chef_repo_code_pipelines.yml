@@ -1,0 +1,201 @@
+default:
+  tags:
+    - <internal_runner_tag> # Use if needed, otherwise default is gitlab shared runners
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/chef/chefworkstation # variable at the begining helps cache containers in gitlab instead of always pulling from docker hub and hitting their pull limits
+  before_script:
+    - mkdir -p ~/.chef
+    - |-
+      cat <<-EOF > ~/.chef/config.rb
+      node_name                "admin"
+      client_key               '/root/.chef/admin.pem'
+      cookbook_path            '${CI_PROJECT_DIR}/../'
+      ssl_verify_mode          :verify_none
+      chef_server_url          'https://chef-server.example.com/organizations/test'
+      chef_license             'accept'
+      knife[:chef_license] = 'accept'
+      knife[:supermarket_site] = 'https://chef-supermarket.example.com'
+      EOF
+    - cat $CHEF_ADMIN_KEY > ~/.chef/admin.pem
+    - export CHEF_LICENSE="accept-no-persist"
+    - cd ${CI_PROJECT_DIR}
+    - git fetch --all
+    - chef -v
+  interruptible: true
+  timeout: 2m
+
+stages:
+  - lint
+  - deploy
+
+Cookstyle:
+  stage: lint
+  script:
+    - cookstyle --display-cop-names --extra-details
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.rb"
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "**/*.rb"
+      when: always
+
+Json_lint:
+  stage: lint
+  tags:
+    - cloud-platform
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/python:alpine
+  before_script:
+    - pip install --no-cache-dir demjson3
+  script:
+    - find . -not -path "*/\.*" -type f -iname "*.json" -exec jsonlint \{\} \+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.json"
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "**/*.json"
+      when: always
+
+Markdown_lint:
+  stage: lint
+  tags:
+    - cloud-platform
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/ruby:alpine
+  before_script:
+    - gem install mdl
+  script:
+    - find . -not -path "*/\.*" -type f -iname "*.md" -exec mdl \{\} \+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.md"
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "**/*.md"
+      when: always
+
+Yaml_lint:
+  stage: lint
+  tags:
+    - cloud-platform
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/ruby:alpine
+  before_script:
+    - gem install yaml-lint
+  script:
+    - yaml-lint -i ./
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.yml"
+        - "**/*.yaml"
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "**/*.yml"
+        - "**/*.yaml"
+      when: always
+
+data_bags_deployment: # looks for data bags with changes and only uploads those data bag changes
+  stage: deploy
+  script:
+    - git diff --diff-filter=d --name-only $CI_COMMIT_BEFORE_SHA | { grep "data_bags/.*/.*.json" || true; } > dbag.txt
+    - if [ -s dbag.txt ];
+      then
+        echo "Need to update data_bags";
+        while read data_bag;
+        do
+          bag=$(cut -d/ -f2 <<<$data_bag);
+          knife data bag from file $bag $data_bag;
+        done < dbag.txt;
+      else
+        echo "No databags to update";
+        exit 0;
+      fi
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      changes:
+        - "data_bags/**/*.json"
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - "data_bags/**/*.json"
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+
+Policyfiles_deployment_non-prod: # Looks for policyfile locks that have changes and uploads those changes to dev policy group automatically on merge to master or main branch
+  stage: deploy
+  script:
+    - git diff --diff-filter=d --name-only $CI_COMMIT_BEFORE_SHA | { grep "policyfiles/.*.lock.json" || true; } > pfile.txt
+    - if [ -s pfile.txt ];
+      then
+        echo "Need to update Policy_files";
+        while read policy;
+        do
+          echo "***** Installing Cookbooks for $policy *****";
+          chef install $policy;
+          echo "***** Uploading Cookbooks to chef-server for $policy *****";
+          chef push dev $policy;
+        done < pfile.txt;
+      else
+        echo "No Policy_files to update";
+        exit 0;
+      fi
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      changes:
+        - "policyfiles/*.json"
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - "policyfiles/*.json"
+      when: always
+
+Policyfiles_deployment_prod: # Looks for policyfile locks that have changes and uploads those changes to prod policy group on manual start of job when merged to master or main branch
+  stage: deploy
+  script:
+    - git diff --diff-filter=d --name-only $CI_COMMIT_BEFORE_SHA | { grep "policyfiles/.*.lock.json" || true; } > pfile.txt
+    - if [ -s pfile.txt ];
+      then
+        echo "Need to update Policy_files";
+        while read policy;
+        do
+          echo "***** Installing Cookbooks for $policy *****";
+          chef install $policy;
+          echo "***** Uploading Cookbooks to chef-server for $policy *****";
+          chef push prod $policy;
+        done < pfile.txt;
+      else
+        echo "No Policy_files to update";
+        exit 0;
+      fi
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      changes:
+        - "policyfiles/*.json"
+      when: manual
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - "policyfiles/*.json"
+      when: manual

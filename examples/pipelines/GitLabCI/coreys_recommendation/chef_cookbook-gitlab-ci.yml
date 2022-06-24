@@ -1,0 +1,12 @@
+include:
+  - project: '<parent_account>/<subgroup>/pipeline_configs'
+    ref: master
+    file: '/chef/cookbooks/chef_cookbook_code_pipelines.yml'
+
+Kitchen_dokken:
+  parallel:
+    matrix:
+      - SUITE:
+          - default
+        OS:
+          - amazon2

@@ -1,0 +1,183 @@
+default:
+  tags:
+    - <internal_runner_tag> # Use if needed, otherwise default is gitlab shared runners
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/chef/chefworkstation # variable at the begining helps cache containers in gitlab instead of always pulling from docker hub and hitting their pull limits
+  before_script:
+    - mkdir -p ~/.chef # Creating .chef folder and config file, assumes using internal supermarket server without any creds. If chef-server is central repository of CB artifacts add node_name and client_key keys and point it to your pem file for chef-server auth
+    - |-
+      cat <<-EOF > ~/.chef/config.rb
+        cookbook_path            '${CI_PROJECT_DIR}/../'
+        ssl_verify_mode          :verify_none
+        chef_license             'accept'
+        knife[:chef_license] = 'accept'
+        knife[:supermarket_site] = 'https://chef-supermarket.example.com'
+      EOF
+    - export CHEF_LICENSE="accept-no-persist"
+    - cd ${CI_PROJECT_DIR}
+    - chef -v
+  interruptible: true
+  timeout: 5m
+
+services:
+  - docker:dind
+
+stages:
+  - lint
+  - integration
+  - deploy
+
+Cookstyle:
+  stage: lint
+  script:
+    - cookstyle --display-cop-names --extra-details
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.rb"
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "**/*.rb"
+      when: always
+
+Json_lint:
+  stage: lint
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/python:alpine
+  before_script:
+    - pip install --no-cache-dir demjson3
+  script:
+    - find . -not -path "*/\.*" -type f -iname "*.json" -exec jsonlint \{\} \+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.json"
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "**/*.json"
+      when: always
+
+Markdown_lint:
+  stage: lint
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/ruby:alpine
+  before_script:
+    - gem install mdl
+  script:
+    - find . -not -path "*/\.*" -type f -iname "*.md" -exec mdl \{\} \+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.md"
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "**/*.md"
+      when: always
+
+Yaml_lint:
+  stage: lint
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/ruby:alpine
+  before_script:
+    - gem install yaml-lint
+  script:
+    - yaml-lint -i ./
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.yml"
+        - "**/*.yaml"
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "**/*.yml"
+        - "**/*.yaml"
+      when: always
+
+Kitchen_dokken: # runs dokken tests only if kitchen.dokken.yml file exists
+  stage: integration
+  needs:
+    - Cookstyle
+  variables:
+    CHEF_LICENSE: accept-no-persist
+    KITCHEN_LOCAL_YAML: "kitchen.dokken.yml"
+  parallel:
+    matrix:
+      - SUITE:
+        - default
+        OS:
+          - amazon2
+          - almalinux-7
+          - almalinux-8
+  script:
+    - kitchen test $SUITE-$OS --destroy always
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.rb"
+      exists:
+        - kitchen.dokken.yml
+      when: always
+
+Kitchen_exec: # Only runs windows kitchen tests if kitchen.exec.yml file exists
+  stage: integration
+  needs:
+    - Cookstyle
+  variables:
+    CHEF_LICENSE: accept-no-persist
+    KITCHEN_LOCAL_YAML: "kitchen.exec.yml"
+  parallel:
+    matrix:
+      - SUITE:
+          - default
+        OS:
+          - windows-2019
+  script:
+    - systeminfo
+    - kitchen test $SUITE-$OS --destroy always
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.rb"
+      exists:
+        - kitchen.exec.yml
+      when: always
+
+Publish_supermarket: # Deploys cookbook to internal supermarket server on merge to main or master branch
+  stage: deploy
+  script:
+    - knife supermarket share $(grep -oP "(?<=name ')[^' ]+" ./metadata.rb) -u $CHEF_SUPERMARKET_USER -k "$CHEF_SUPERMARKET_KEY"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      changes:
+        - "**/*.rb"
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - "**/*.rb"
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never

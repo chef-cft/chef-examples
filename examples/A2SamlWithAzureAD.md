@@ -68,3 +68,11 @@
    1. `entity_issuer`: This should be the URL for your automate server plus `/dex/callback`. (ex: `https://serverfqdn/dex/callback`)
    1. Save and close the file.
 1. Run `chef-automate config patch saml.toml` to apply the changes to Chef Automate without restarting all of the services.
+
+## Chef Automate V2 Policy Assignment
+
+1. By default the SAML Authenticated user does not have any policy assigned and needs to assigned through API.
+1. Login to Automate as a local admin and generate an API token.
+1. Assign a policy to the SAML user through the API.
+   1. For e.g. administrator access can be granted through POST https://<Automate Server>/apis/iam/v2/policies/administrator-access/members:add --data-raw  '{"members" :["user:saml:username"]}'
+

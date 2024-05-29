@@ -1,6 +1,8 @@
 # A-HA  60k+ nodes Tuning Recommendations
 
-Assumption is running with servers specs of:
+Good read for additional Operating system level tuning <https://community.progress.com/s/article/Chef-Automate-Deployment-Planning-and-Performance-tuning-transcribed-from-Scaling-Chef-Automate-Beyond-100-000-nodes>
+
+Assumption is running with minimum servers specs of:
 
 - 7 FE Nodes:
   - 8-16 cores cpu, 32GB ram
@@ -9,24 +11,34 @@ Assumption is running with servers specs of:
 - 5 BE OpenSearch Nodes:
   - 16 cores cpu, 64GB ram, 15TB SSD hard drive space
 
-## Apply to all FE’s for infra-server and Automate via patch.toml
+## Apply to all FE’s for infra-server via `chef-autoamte config patch patch.toml`
 
 ```toml
 # Cookbook Version Cache
 [erchef.v1.sys.api]
-  cbv_cache_enabled=true
+  cbv_cache_enabled = true
+
+# Worker Processes
+[load_balancer.v1.sys.ngx.main]
+  worker_processes = 10
+[cs_nginx.v1.sys.ngx.main]
+  worker_processes = 10
+[events.v1.sys.ngx.main]
+  worker_processes = 10
+[esgateway.v1.sys.ngx.main]
+  worker_processes = 10
 
 # Depsolver Workers
 [erchef.v1.sys.depsolver]
-  timeout=5000
+  timeout = 10000
 [erchef.v1.sys.depsolver]
-  pool_init_size=32
-  pool_queue_timeout=10000
+  pool_init_size = 32
+  pool_queue_timeout = 10000
 
 # Connection Pools
 [erchef.v1.sys.data_collector]
-  pool_init_size=100
-  pool_max_size=100
+  pool_init_size = 100
+  pool_max_size = 100
 [erchef.v1.sys.sql]
   timeout = 5000
   pool_init_size = 80
@@ -40,42 +52,47 @@ Assumption is running with servers specs of:
   pool_queue_max = 512
   pool_queue_timeout = 10000
 [erchef.v1.sys.authz]
-  timeout = 5000
+  timeout = 10000
   pool_init_size = 100
   pool_max_size = 100
   pool_queue_max = 512
   pool_queue_timeout = 10000
 ```
 
-## Apply to all BE’s for OpenSearch via patch.toml
+## Apply to all FE’s for Automate via `chef-autoamte config patch patch.toml`
 
 ```toml
-# Cluster
-[cluster]
-name = "opensearch"
-max_shards_per_node= “6000"
-
-# JVM Heap
-[runtime]
-es_java_opts = ""
-es_startup_sleep_time = ""
-g1ReservePercent = "25"
-initiatingHeapOccupancyPercent = "15"
-maxHeapsize = “32g"
-max_locked_memory = "unlimited"
-max_open_files = ""
-minHeapsize = “32g"
-
+# Worker Processes
+[load_balancer.v1.sys.ngx.main]
+  worker_processes = 10
+[events.v1.sys.ngx.main]
+  worker_processes = 10
+[esgateway.v1.sys.ngx.main]
+  worker_processes = 10
 ```
 
-## Apply to all BE’s for PGSQL via patch.toml
+## Apply to all BE’s for OpenSearch via `chef-autoamte config patch patch.toml`
+
+```toml
+# Cluster Ingestion
+[opensearch.v1.sys.cluster]
+  max_shards_per_node = 6000
+# JVM Heap
+[opensearch.v1.sys.runtime]
+  heapsize = “32g"
+```
+
+## Apply to all BE’s for PGSQL via `chef-autoamte config patch patch.toml`
 
 ```toml
 # PGSQL connections
-max_connections = 1500
+[postgresql.v1.sys.pg]
+  max_connections = 1500
 ```
 
-### Get current HaProxy config, and update with the new parameters
+### PGSQL servers haproxy service isn't configurable via `chef-autoamte config patch patch.toml` Below are the steps to update the haproxy service
+
+#### Get the current HaProxy config, and update with the new parameters
 
 ```bash
 source /hab/sup/default/SystemdEnvironmentFile.sh
@@ -91,14 +108,16 @@ maxconn = 2000
 maxconn = 1500
 ```
 
-#### Apply the change as below:-
+##### Apply the change as below:-
 
 ```bash
 hab config apply automate-ha-haproxy.default $(date '+%s') haproxy_config.toml
 ```
-##### Restart, follower01, follower02 ,then leader as below.  Have to wait for sync. 
+
+###### Restart, follower01, follower02 ,then leader as below.  Have to wait for sync.
 
 ###### On Followers
+
 ```bash
 Systemctl stop hab-sup 
 Systemctl start hab-sup 
@@ -112,14 +131,14 @@ Systemctl stop hab-sup
 # wait till leader is elected from other 2 old followers.  Only then do the start 
 Systemctl start hab-sup
 ```
- 
-##### Check the synchonisation
+
+###### Check the synchronization
 
 ```bash
 journalctl -fu hab-sup
 ```
 
-##### cat the following file on all x3 BE pgsql nodes.  Just to be sure the settings have taken, after restart
+###### Cat the following file on all x3 BE pgsql nodes.  Just to be sure the settings have taken, after restart
 
 ```bash
 hab/svc/automate-ha-haproxy/config/haproxy.conf

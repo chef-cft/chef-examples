@@ -11,7 +11,7 @@ Assumption is running with minimum servers specs of:
 - 5 BE OpenSearch Nodes:
   - 16 cores cpu, 64GB ram, 15TB SSD hard drive space
 
-## Apply to all FE’s for infra-server via `chef-autoamte config patch patch.toml`
+## Apply to all FE’s for infra-server via `chef-autoamte config patch infr-fe-patch.toml`
 
 ```toml
 # Cookbook Version Cache
@@ -20,13 +20,13 @@ Assumption is running with minimum servers specs of:
 
 # Worker Processes
 [load_balancer.v1.sys.ngx.main]
-  worker_processes = 10
+  worker_processes = 10 # Not to exceed 10 or max number of cores
 [cs_nginx.v1.sys.ngx.main]
-  worker_processes = 10
+  worker_processes = 10 # Not to exceed 10 or max number of cores
 [events.v1.sys.ngx.main]
-  worker_processes = 10
+  worker_processes = 10 # Not to exceed 10 or max number of cores
 [esgateway.v1.sys.ngx.main]
-  worker_processes = 10
+  worker_processes = 10 # Not to exceed 10 or max number of cores
 
 # Depsolver Workers
 [erchef.v1.sys.depsolver]
@@ -59,19 +59,19 @@ Assumption is running with minimum servers specs of:
   pool_queue_timeout = 10000
 ```
 
-## Apply to all FE’s for Automate via `chef-autoamte config patch patch.toml`
+## Apply to all FE’s for Automate via `chef-autoamte config patch autoamte-fe-patch.toml`
 
 ```toml
 # Worker Processes
 [load_balancer.v1.sys.ngx.main]
-  worker_processes = 10
+  worker_processes = 10 # Not to exceed 10 or max number of cores
 [events.v1.sys.ngx.main]
-  worker_processes = 10
+  worker_processes = 10 # Not to exceed 10 or max number of cores
 [esgateway.v1.sys.ngx.main]
-  worker_processes = 10
+  worker_processes = 10 # Not to exceed 10 or max number of cores
 ```
 
-## Apply to all BE’s for OpenSearch via `chef-autoamte config patch patch.toml`
+## Apply to all BE’s for OpenSearch via `chef-autoamte config patch opensearch-be-patch.toml`
 
 ```toml
 # Cluster Ingestion
@@ -79,10 +79,10 @@ Assumption is running with minimum servers specs of:
   max_shards_per_node = 6000
 # JVM Heap
 [opensearch.v1.sys.runtime]
-  heapsize = “32g"
+  heapsize = “32g" # 50% of total memory up to 32GB
 ```
 
-## Apply to all BE’s for PGSQL via `chef-autoamte config patch patch.toml`
+## Apply to all BE’s for PGSQL via `chef-autoamte config patch pgsql-be-patch.toml`
 
 ```toml
 # PGSQL connections
@@ -90,7 +90,7 @@ Assumption is running with minimum servers specs of:
   max_connections = 1500
 ```
 
-### PGSQL servers haproxy service isn't configurable via `chef-autoamte config patch patch.toml` Below are the steps to update the haproxy service
+### PGSQL servers haproxy service isn't configurable via `chef-autoamte config patch` Below are the steps to update the haproxy service
 
 #### Get the current HaProxy config, and update with the new parameters
 

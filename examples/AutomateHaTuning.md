@@ -2,7 +2,7 @@
 
 Good read for additional Operating system level tuning <https://community.progress.com/s/article/Chef-Automate-Deployment-Planning-and-Performance-tuning-transcribed-from-Scaling-Chef-Automate-Beyond-100-000-nodes>
 
-Assumption is running with minimum servers specs of:
+Assumption is running with minimum servers specs for a combined cluster of:
 
 - 7 FE Nodes:
   - 8-16 cores cpu, 32GB ram
@@ -10,6 +10,8 @@ Assumption is running with minimum servers specs of:
   - 8-16 cores cpu, 32-64GB ram, 1TB SSD hard drive space
 - 5 BE OpenSearch Nodes:
   - 16 cores cpu, 64GB ram, 15TB SSD hard drive space
+
+You will also get more milage by creating seperate clusters for infra-server and Automate. This will allow for separate PGSQL and OpenSearch clusters for each application.
 
 ## Apply to all FE’s for infra-server via `chef-autoamte config patch infr-fe-patch.toml`
 

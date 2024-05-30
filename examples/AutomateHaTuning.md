@@ -13,6 +13,9 @@ Assumption is running with minimum servers specs for a combined cluster of:
 
 You will also get more milage by creating seperate clusters for infra-server and Automate. This will allow for separate PGSQL and OpenSearch clusters for each application.
 
+Additionally, these tuning parameters assume a chef workload of roles/envs/cookbooks.  
+It is not intended to be used for policyfile only deployments(eg, depsolvers are not required for Policyfiles)
+
 ## Apply to all FE’s for infra-server via `chef-automate config patch infr-fe-patch.toml --cs`
 
 ```toml
@@ -25,15 +28,12 @@ You will also get more milage by creating seperate clusters for infra-server and
   worker_processes = 10 # Not to exceed 10 or max number of cores
 [cs_nginx.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
-[events.v1.sys.ngx.main]
-  worker_processes = 10 # Not to exceed 10 or max number of cores
 [esgateway.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
 
 # Depsolver Workers
 [erchef.v1.sys.depsolver]
   timeout = 10000
-[erchef.v1.sys.depsolver]
   pool_init_size = 32
   pool_max_size = 32
   pool_queue_max = 512
@@ -63,13 +63,13 @@ You will also get more milage by creating seperate clusters for infra-server and
   pool_queue_timeout = 10000
 ```
 
-## Apply to all FE’s for Automate via `chef-automate config patch autoamte-fe-patch.toml --a2`
+## Apply to all FE’s for Automate via `chef-automate config patch automate-fe-patch.toml --a2`
 
 ```toml
 # Worker Processes
 [load_balancer.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
-[events.v1.sys.ngx.main]
+[cs_nginx.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
 [esgateway.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
@@ -83,7 +83,7 @@ You will also get more milage by creating seperate clusters for infra-server and
   max_shards_per_node = 6000
 # JVM Heap
 [opensearch.v1.sys.runtime]
-  heapsize = “32g" # 50% of total memory up to 32GB
+heapsize = "32g" # 50% of total memory up to 32GB
 ```
 
 ## Apply to all BE’s for PGSQL via `chef-automate config patch pgsql-be-patch.toml --pg`
@@ -94,9 +94,11 @@ You will also get more milage by creating seperate clusters for infra-server and
   max_connections = 1500
 ```
 
-### PGSQL servers haproxy service isn't configurable via `chef-autoamte config patch` Below are the steps to update the haproxy service
+### PGSQL servers haproxy service isn't configurable via `chef-automate config patch` Below are the steps to update the haproxy service
 
 #### Get the current HaProxy config, and update with the new parameters
+
+### note: run this on a db backend, normally a follower
 
 ```bash
 source /hab/sup/default/SystemdEnvironmentFile.sh

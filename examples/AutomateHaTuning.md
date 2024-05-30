@@ -11,9 +11,11 @@ Assumption is running with minimum servers specs for a combined cluster of:
 - 5 BE OpenSearch Nodes:
   - 16 cores cpu, 64GB ram, 15TB SSD hard drive space
 
-You will also get more milage by creating seperate clusters for infra-server and Automate. This will allow for separate PGSQL and OpenSearch clusters for each application.
+You will also get more mileage by creating separate clusters for infra-server and Automate. This will allow for separate PGSQL and OpenSearch clusters for each application.
 
-## Apply to all FE’s for infra-server via `chef-autoamte config patch infr-fe-patch.toml`
+Additionally, these tuning parameters assume a chef workload of roles/envs/cookbooks. It is not intended to be used for policyfile only deployments(eg, depsolvers are not required for Policyfiles)
+
+## Apply to all FE’s for infra-server via `chef-automate config patch infr-fe-patch.toml -cs`
 
 ```toml
 # Cookbook Version Cache
@@ -25,16 +27,15 @@ You will also get more milage by creating seperate clusters for infra-server and
   worker_processes = 10 # Not to exceed 10 or max number of cores
 [cs_nginx.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
-[events.v1.sys.ngx.main]
-  worker_processes = 10 # Not to exceed 10 or max number of cores
 [esgateway.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
 
 # Depsolver Workers
 [erchef.v1.sys.depsolver]
   timeout = 10000
-[erchef.v1.sys.depsolver]
   pool_init_size = 32
+  pool_max_size = 32
+  pool_queue_max = 512
   pool_queue_timeout = 10000
 
 # Connection Pools
@@ -61,19 +62,17 @@ You will also get more milage by creating seperate clusters for infra-server and
   pool_queue_timeout = 10000
 ```
 
-## Apply to all FE’s for Automate via `chef-autoamte config patch autoamte-fe-patch.toml`
+## Apply to all FE’s for Automate via `chef-automate config patch automate-fe-patch.toml --a2`
 
 ```toml
 # Worker Processes
 [load_balancer.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
-[events.v1.sys.ngx.main]
-  worker_processes = 10 # Not to exceed 10 or max number of cores
 [esgateway.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
 ```
 
-## Apply to all BE’s for OpenSearch via `chef-autoamte config patch opensearch-be-patch.toml`
+## Apply to all BE’s for OpenSearch via `chef-automate config patch opensearch-be-patch.toml --os`
 
 ```toml
 # Cluster Ingestion
@@ -81,10 +80,10 @@ You will also get more milage by creating seperate clusters for infra-server and
   max_shards_per_node = 6000
 # JVM Heap
 [opensearch.v1.sys.runtime]
-  heapsize = “32g" # 50% of total memory up to 32GB
+  heapsize = "32g" # 50% of total memory up to 32GB
 ```
 
-## Apply to all BE’s for PGSQL via `chef-autoamte config patch pgsql-be-patch.toml`
+## Apply to all BE’s for PGSQL via `chef-automate config patch pgsql-be-patch.toml --pg`
 
 ```toml
 # PGSQL connections
@@ -92,9 +91,11 @@ You will also get more milage by creating seperate clusters for infra-server and
   max_connections = 1500
 ```
 
-### PGSQL servers haproxy service isn't configurable via `chef-autoamte config patch` Below are the steps to update the haproxy service
+### PGSQL servers haproxy service isn't configurable via `chef-automate config patch` Below are the steps to update the haproxy service
 
 #### Get the current HaProxy config, and update with the new parameters
+
+Note: run this on a db backend, normally a follower
 
 ```bash
 source /hab/sup/default/SystemdEnvironmentFile.sh
@@ -110,11 +111,13 @@ maxconn = 2000
 maxconn = 1500
 ```
 
-##### Apply the change as below:-
+##### Apply the change as below on a single db backend:-
 
 ```bash
 hab config apply automate-ha-haproxy.default $(date '+%s') haproxy_config.toml
 ```
+
+Note: this will propagate to all 3 backend db's and will restart the haproxy service on each Backend, causing an outage(will only last a few mins), but a complete db restart is required as follows:- (the only robust way is to restart all db backends, Do not skip the below steps)
 
 ###### Restart, follower01, follower02 ,then leader as below.  Have to wait for sync.
 
@@ -141,6 +144,8 @@ journalctl -fu hab-sup
 ```
 
 ###### Cat the following file on all x3 BE pgsql nodes.  Just to be sure the settings have taken, after restart
+
+(ie witness the "maxconn = 1500" setting is present )
 
 ```bash
 hab/svc/automate-ha-haproxy/config/haproxy.conf

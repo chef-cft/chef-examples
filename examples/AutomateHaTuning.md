@@ -15,7 +15,7 @@ You will also get more mileage by creating separate clusters for infra-server an
 
 Additionally, these tuning parameters assume a chef workload of roles/envs/cookbooks. It is not intended to be used for policyfile only deployments(eg, depsolvers are not required for Policyfiles)
 
-## Apply to all FE’s for infra-server via `chef-automate config patch infr-fe-patch.toml -cs`
+## Apply to all FE’s for infra-server via `chef-automate config patch infr-fe-patch.toml --cs`
 
 ```toml
 # Cookbook Version Cache

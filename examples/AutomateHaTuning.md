@@ -39,7 +39,7 @@ automate-backend-ctl applied --svc=automate-ha-haproxy | tail -n +2 > haproxy_co
 # HaProxy config
 # Global
 maxconn = 2000
-# Each backend Server
+# Backend Servers
 [server]
 maxconn = 1500
 ```

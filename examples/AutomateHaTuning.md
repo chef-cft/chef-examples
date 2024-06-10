@@ -99,7 +99,19 @@ hab/svc/automate-ha-haproxy/config/haproxy.conf
 
 ---
 
-## #3 Apply to all FE’s for infra-server via `chef-automate config patch infr-fe-patch.toml -cs`
+## #3 Apply to all FE’s for Automate via `chef-automate config patch automate-fe-patch.toml --a2`
+
+```toml
+# Worker Processes
+[load_balancer.v1.sys.ngx.main]
+  worker_processes = 10 # Not to exceed 10 or max number of cores
+[esgateway.v1.sys.ngx.main]
+  worker_processes = 10 # Not to exceed 10 or max number of cores
+```
+
+---
+
+## #4 Apply to all FE’s for infra-server via `chef-automate config patch infr-fe-patch.toml -cs`
 
 ```toml
 # Cookbook Version Cache
@@ -146,16 +158,4 @@ hab/svc/automate-ha-haproxy/config/haproxy.conf
   pool_max_size = 100
   pool_queue_max = 512
   pool_queue_timeout = 10000
-```
-
----
-
-## #4 Apply to all FE’s for Automate via `chef-automate config patch automate-fe-patch.toml --a2`
-
-```toml
-# Worker Processes
-[load_balancer.v1.sys.ngx.main]
-  worker_processes = 10 # Not to exceed 10 or max number of cores
-[esgateway.v1.sys.ngx.main]
-  worker_processes = 10 # Not to exceed 10 or max number of cores
 ```

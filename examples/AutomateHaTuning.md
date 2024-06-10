@@ -15,7 +15,93 @@ You will also get more mileage by creating separate clusters for infra-server an
 
 Additionally, these tuning parameters assume a chef workload of roles/envs/cookbooks. It is not intended to be used for policyfile only deployments(eg, depsolvers are not required for Policyfiles)
 
-## Apply to all FE’s for infra-server via `chef-automate config patch infr-fe-patch.toml -cs`
+---
+
+## #1 Apply to all BE’s for PGSQL via `chef-automate config patch pgsql-be-patch.toml --pg`
+
+```toml
+# PGSQL connections
+[postgresql.v1.sys.pg]
+  max_connections = 1500
+```
+
+### PGSQL servers haproxy service isn't configurable via `chef-automate config patch` Below are the steps to update the haproxy service
+
+#### Get the current HaProxy config, and update with the new parameters
+
+Note: run this on a db backend, normally a follower
+
+```bash
+source /hab/sup/default/SystemdEnvironmentFile.sh
+automate-backend-ctl applied --svc=automate-ha-haproxy | tail -n +2 > haproxy_config.toml
+# note haproxy_config.toml may be blank. This is only to capture any local customisations that might have occurred
+```
+
+```toml
+# HaProxy config
+# Global
+maxconn = 2000
+# Each backend Server
+[server]
+maxconn = 1500
+```
+
+##### Apply the change as below on a single db backend:-
+
+```bash
+hab config apply automate-ha-haproxy.default $(date '+%s') haproxy_config.toml
+```
+
+Note: this will propagate to all 3 backend db's and will restart the haproxy service on each Backend, causing an outage(will only last a few mins), but a complete db restart is required as follows:- (the only robust way is to restart all db backends, Do not skip the below steps)
+
+###### Restart, follower01, follower02 ,then leader as below.  Have to wait for sync.
+
+###### On Followers
+
+```bash
+Systemctl stop hab-sup 
+Systemctl start hab-sup 
+journalctl -fu hab-sup
+```
+
+###### On leader
+
+```bash
+Systemctl stop hab-sup
+# wait till leader is elected from other 2 old followers.  Only then do the start 
+Systemctl start hab-sup
+```
+
+###### Check the synchronization
+
+```bash
+journalctl -fu hab-sup
+```
+
+###### Cat the following file on all x3 BE pgsql nodes.  Just to be sure the settings have taken, after restart
+
+(ie witness the "maxconn = 1500" setting is present )
+
+```bash
+hab/svc/automate-ha-haproxy/config/haproxy.conf
+```
+
+---
+
+## #2 Apply to all BE’s for OpenSearch via `chef-automate config patch opensearch-be-patch.toml --os`
+
+```toml
+# Cluster Ingestion
+[opensearch.v1.sys.cluster]
+  max_shards_per_node = 6000
+# JVM Heap
+[opensearch.v1.sys.runtime]
+  heapsize = "32g" # 50% of total memory up to 32GB
+```
+
+---
+
+## #3 Apply to all FE’s for infra-server via `chef-automate config patch infr-fe-patch.toml -cs`
 
 ```toml
 # Cookbook Version Cache
@@ -62,7 +148,9 @@ Additionally, these tuning parameters assume a chef workload of roles/envs/cookb
   pool_queue_timeout = 10000
 ```
 
-## Apply to all FE’s for Automate via `chef-automate config patch automate-fe-patch.toml --a2`
+---
+
+## #4 Apply to all FE’s for Automate via `chef-automate config patch automate-fe-patch.toml --a2`
 
 ```toml
 # Worker Processes
@@ -70,83 +158,4 @@ Additionally, these tuning parameters assume a chef workload of roles/envs/cookb
   worker_processes = 10 # Not to exceed 10 or max number of cores
 [esgateway.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
-```
-
-## Apply to all BE’s for OpenSearch via `chef-automate config patch opensearch-be-patch.toml --os`
-
-```toml
-# Cluster Ingestion
-[opensearch.v1.sys.cluster]
-  max_shards_per_node = 6000
-# JVM Heap
-[opensearch.v1.sys.runtime]
-  heapsize = "32g" # 50% of total memory up to 32GB
-```
-
-## Apply to all BE’s for PGSQL via `chef-automate config patch pgsql-be-patch.toml --pg`
-
-```toml
-# PGSQL connections
-[postgresql.v1.sys.pg]
-  max_connections = 1500
-```
-
-### PGSQL servers haproxy service isn't configurable via `chef-automate config patch` Below are the steps to update the haproxy service
-
-#### Get the current HaProxy config, and update with the new parameters
-
-Note: run this on a db backend, normally a follower
-
-```bash
-source /hab/sup/default/SystemdEnvironmentFile.sh
-automate-backend-ctl applied --svc=automate-ha-haproxy | tail -n +2 > haproxy_config.toml
-# note haproxy_config.toml may be blank. This is only to capture any local customisations that might have occurred
-```
-
-```haproxy.config
-# HaProxy config
-# Global
-maxconn = 2000
-# Each backend Server add
-maxconn = 1500
-```
-
-##### Apply the change as below on a single db backend:-
-
-```bash
-hab config apply automate-ha-haproxy.default $(date '+%s') haproxy_config.toml
-```
-
-Note: this will propagate to all 3 backend db's and will restart the haproxy service on each Backend, causing an outage(will only last a few mins), but a complete db restart is required as follows:- (the only robust way is to restart all db backends, Do not skip the below steps)
-
-###### Restart, follower01, follower02 ,then leader as below.  Have to wait for sync.
-
-###### On Followers
-
-```bash
-Systemctl stop hab-sup 
-Systemctl start hab-sup 
-journalctl -fu hab-sup
-```
-
-###### On leader
-
-```bash
-Systemctl stop hab-sup
-# wait till leader is elected from other 2 old followers.  Only then do the start 
-Systemctl start hab-sup
-```
-
-###### Check the synchronization
-
-```bash
-journalctl -fu hab-sup
-```
-
-###### Cat the following file on all x3 BE pgsql nodes.  Just to be sure the settings have taken, after restart
-
-(ie witness the "maxconn = 1500" setting is present )
-
-```bash
-hab/svc/automate-ha-haproxy/config/haproxy.conf
 ```

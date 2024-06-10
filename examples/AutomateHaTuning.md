@@ -13,8 +13,6 @@ Assumption is running with minimum servers specs for a combined cluster of:
 
 You will also get more mileage by creating separate clusters for infra-server and Automate. This will allow for separate PGSQL and OpenSearch clusters for each application.
 
-Additionally, these tuning parameters assume a chef workload of roles/envs/cookbooks. It is not intended to be used for policyfile only deployments(eg, depsolvers are not required for Policyfiles)
-
 ---
 
 ## #1 Apply to all BE’s for PGSQL via `chef-automate config patch pgsql-be-patch.toml --pg`
@@ -116,7 +114,9 @@ hab/svc/automate-ha-haproxy/config/haproxy.conf
 [esgateway.v1.sys.ngx.main]
   worker_processes = 10 # Not to exceed 10 or max number of cores
 
-# Depsolver Workers
+# CB Depsolver
+# Depsolver tuning parameters assume a chef workload of roles/envs/cookbooks
+# If only using policyfiles instead of roles/envs depsolver tuning is not required 
 [erchef.v1.sys.depsolver]
   timeout = 10000
   pool_init_size = 32

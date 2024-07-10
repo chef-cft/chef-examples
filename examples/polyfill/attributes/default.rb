@@ -1,1 +1,0 @@
-default['audit']['reporter'] = %w(chef-server-automate cli)

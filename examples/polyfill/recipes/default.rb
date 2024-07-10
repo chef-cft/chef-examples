@@ -15,7 +15,7 @@ file_names_tobe_deleted.each do |f|
     action :delete
   end
 end
-file_to_be_created = '/home/tag-file'
+file_to_be_created = '/var/log/chef-quarantine-polyfill'
 file file_to_be_created do
   action :create
 end

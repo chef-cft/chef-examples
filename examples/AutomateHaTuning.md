@@ -98,7 +98,7 @@ Then run config patch with toml file below
 
 ```toml
 # knife search fix for nodes over 10k
-[erchef.v1.sys.index]
+[erchef.v1.sys.index] # For Automate version 4.13.76 and newer
   track_total_hits = true
 # Cluster Ingestion
 [opensearch.v1.sys.cluster]

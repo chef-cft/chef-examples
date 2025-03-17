@@ -20,8 +20,10 @@ You will also get more mileage by creating separate clusters for infra-server an
 ```toml
 # PGSQL connections
 [postgresql.v1.sys.pg]
-  max_connections = 1500
+  max_connections = 2000
 ```
+
+## *Note: Only needed for A-HA clusters version below 4.13.76. 4.13.76 removed the need for HAProxy connection to PGSQL and FE nodes connect directly to PGSQL now.
 
 ### PGSQL servers haproxy service isn't configurable via `chef-automate config patch` Below are the steps to update the haproxy service
 

@@ -172,3 +172,38 @@ Then run config patch with toml file below
   pool_queue_max = 512
   pool_queue_timeout = 10000
 ```
+
+## #5 Optional settings
+
+```toml
+# Add client ip to x-forwarded-for header for tracing requests
+[global.v1.sys.ngx.http]
+  include_x_forwarded_for = true
+```
+
+### Increase knife search results past 10k results <https://docs.chef.io/automate/troubleshooting/#step-1-increase-the-max_result_window-to-retrieve-more-than-10000-records>
+
+On an Opensearch node run:
+
+```bash
+curl -XPUT "http://127.0.0.1:10144/chef/_settings" \
+    -d '{
+          "index": {
+            "max_result_window": 50000
+          }
+        }' \
+    -H "Content-Type: application/json"
+```
+
+To verify setting run:
+
+```bash
+curl http://127.0.0.1:10144/_settings?pretty
+```
+
+Then patch Opensearch via `chef-automate config patch knife-patch.toml -os`
+
+```toml
+[erchef.v1.sys.index]
+ track_total_hits = true
+```

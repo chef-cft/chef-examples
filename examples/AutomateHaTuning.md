@@ -17,13 +17,15 @@ You will also get more mileage by creating separate clusters for infra-server an
 
 ## #1 Apply to all BE’s for PGSQL via `chef-automate config patch pgsql-be-patch.toml --pg`
 
+### *Note: Requires manual service restart of the leader for the setting to take effect
+
 ```toml
 # PGSQL connections
 [postgresql.v1.sys.pg]
   max_connections = 2000
 ```
 
-## *Note: Only needed for A-HA clusters version below 4.13.76. 4.13.76 removed the need for HAProxy connection to PGSQL and FE nodes connect directly to PGSQL now.
+### *Note: Only needed for A-HA clusters version below 4.13.76. 4.13.76 removed the need for HAProxy connection to PGSQL and FE nodes connect directly to PGSQL now.
 
 ### PGSQL servers haproxy service isn't configurable via `chef-automate config patch` Below are the steps to update the haproxy service
 
@@ -175,13 +177,18 @@ Then run config patch with toml file below
 
 ## #5 Optional settings
 
+### Add client ip to x-forwarded-for header for tracing requests
+
+Patch frontend nodes via `chef-automate config patch x-forward-patch.toml -fe`
+
 ```toml
-# Add client ip to x-forwarded-for header for tracing requests
 [global.v1.sys.ngx.http]
   include_x_forwarded_for = true
 ```
 
 ### Increase knife search results past 10k results <https://docs.chef.io/automate/troubleshooting/#step-1-increase-the-max_result_window-to-retrieve-more-than-10000-records>
+
+#### For Automate version 4.13.76 and newer
 
 On an Opensearch node run:
 
@@ -201,7 +208,7 @@ To verify setting run:
 curl http://127.0.0.1:10144/_settings?pretty
 ```
 
-Then patch Opensearch via `chef-automate config patch knife-patch.toml -os`
+Then patch frontend nodes via `chef-automate config patch knife-patch.toml -fe`
 
 ```toml
 [erchef.v1.sys.index]

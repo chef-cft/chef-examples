@@ -22,7 +22,7 @@ You will also get more mileage by creating separate clusters for infra-server an
 ```toml
 # PGSQL connections
 [postgresql.v1.sys.pg]
-  max_connections = 2000
+  max_connections = 5000
 ```
 
 ### *Note: Only needed for A-HA clusters version below 4.13.76. 4.13.76 removed the need for HAProxy connection to PGSQL and FE nodes connect directly to PGSQL now.
@@ -146,8 +146,8 @@ Then run config patch with toml file below
 # If only using policyfiles instead of roles/envs depsolver tuning is not required 
 [erchef.v1.sys.depsolver]
   timeout = 10000
-  pool_init_size = 32
-  pool_max_size = 32
+  pool_init_size = 50
+  pool_max_size = 50
   pool_queue_max = 512
   pool_queue_timeout = 10000
 
@@ -157,14 +157,14 @@ Then run config patch with toml file below
   pool_max_size = 100
 [erchef.v1.sys.sql]
   timeout = 5000
-  pool_init_size = 80
-  pool_max_size = 80
+  pool_init_size = 100
+  pool_max_size = 100
   pool_queue_max = 512
   pool_queue_timeout = 10000
 [bifrost.v1.sys.sql]
   timeout = 5000
-  pool_init_size = 80
-  pool_max_size = 80
+  pool_init_size = 100
+  pool_max_size = 100
   pool_queue_max = 512
   pool_queue_timeout = 10000
 [erchef.v1.sys.authz]
@@ -173,6 +173,10 @@ Then run config patch with toml file below
   pool_max_size = 100
   pool_queue_max = 512
   pool_queue_timeout = 10000
+
+[pg_gateway.v1]
+  [pg_gateway.v1.sys]
+    max_connections = 500
 ```
 
 ## #5 Optional settings

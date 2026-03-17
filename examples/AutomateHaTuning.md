@@ -23,6 +23,9 @@ You will also get more mileage by creating separate clusters for infra-server an
 # PGSQL connections
 [postgresql.v1.sys.pg]
   max_connections = 5000
+  max_wal_size = "4GB"
+  checkpoint_timeout = "15min"
+  checkpoint_completion_target = 0.9
 ```
 
 ### *Note: Only needed for A-HA clusters version below 4.13.76. 4.13.76 removed the need for HAProxy connection to PGSQL and FE nodes connect directly to PGSQL now.

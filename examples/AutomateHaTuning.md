@@ -23,7 +23,11 @@ You will also get more mileage by creating separate clusters for infra-server an
 # PGSQL connections
 [postgresql.v1.sys.pg]
   max_connections = 5000
-  max_wal_size = "4GB"
+  max_wal_size = "8GB"
+  wal_sender_timeout = 300000
+  wal_receiver_timeout = 300000
+  wal_keep_size = 32768
+  wal_compression = "on"
   checkpoint_timeout = "15min"
   checkpoint_completion_target = 0.9
 ```

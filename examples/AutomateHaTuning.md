@@ -99,7 +99,7 @@ hab/svc/automate-ha-haproxy/config/haproxy.conf
 
 ## #2 Apply to all BE’s for OpenSearch via `chef-automate config patch opensearch-be-patch.toml --os`
 
-Fix for knife search when nodes are over 10k. First run this on an FE node for embedded OpenSearch.
+Fix for knife search when nodes are over 10k. First run this on an BE node for embedded OpenSearch.
 
 ```bash
 curl -XPUT "http://127.0.0.1:10144/chef/_settings" -d '{"index": {"max_result_window": 100000}}' -H "Content-Type: application/json"
@@ -108,9 +108,6 @@ curl -XPUT "http://127.0.0.1:10144/chef/_settings" -d '{"index": {"max_result_wi
 Then run config patch with toml file below
 
 ```toml
-# knife search fix for nodes over 10k
-[erchef.v1.sys.index] # For Automate version 4.13.76 and newer
-  track_total_hits = true
 # Cluster Ingestion
 [opensearch.v1.sys.cluster]
   max_shards_per_node = 6000
@@ -150,7 +147,11 @@ Then run config patch with toml file below
 
 # CB Depsolver
 # Depsolver tuning parameters assume a chef workload of roles/envs/cookbooks
-# If only using policyfiles instead of roles/envs depsolver tuning is not required 
+# If only using policyfiles instead of roles/envs depsolver tuning is not required
+# knife search fix for nodes over 10k
+[erchef.v1.sys.index] # For Automate version 4.13.76 and newer
+  track_total_hits = true
+
 [erchef.v1.sys.depsolver]
   timeout = 10000
   pool_init_size = 50
